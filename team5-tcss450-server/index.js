@@ -56,10 +56,11 @@ app.use(function(err, req, res, next) {
 app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    for (i = 1; i < 7; i++) {
-        //write a response to the client
-        response.write('<h' + i + ' style="color:blue">Hello World!</h' + i + '>'); 
-    }
+    response.write('<h' + 0 + ' style="color:black">Team 5 Spring 2020</h' + 0 + '>');
+    response.write('<h' + 3 + ' style="color:blue">Tyler Lorella</h' + 3 + '>');
+    response.write('<h' + 3 + ' style="color:blue">Patrick Moy</h' + 3 + '>');
+    response.write('<h' + 3 + ' style="color:blue">David Saelee</h' + 3 + '>');
+    response.write('<h' + 3 + ' style="color:blue">Gordon Tran</h' + 3 + '>');
     response.end(); //end the response
 });
 

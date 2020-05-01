@@ -1,7 +1,7 @@
 {
-  "name": "450-lab",
+  "name": "tcss450-t5-server-sp20",
   "version": "1.0.0",
-  "description": "TCSS 450 Lab for creating a webservice",
+  "description": "TCSS 450 Team 5 SP 2020 Server Code",
   "main": "index.js",
   "scripts": {
     "test": "index.js"
@@ -11,7 +11,7 @@
     "Mobile",
     "Apps"
   ],
-  "author": "TCSS 450",
+  "author": "TCSS 450 Team 5 SP20",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
