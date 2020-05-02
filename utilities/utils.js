@@ -15,12 +15,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-function sendEmail(from, receiver, subj, message) {
+function sendEmail(from, receiver, subj, textMessage, htmlMessage) {
     let mailOptions = {
         from: from,
         to: receiver,
         subject: subj,
-        text: message
+        text: textMessage,
+        html: htmlMessage
     };
 
     transporter.sendMail(mailOptions, function(error, info) {

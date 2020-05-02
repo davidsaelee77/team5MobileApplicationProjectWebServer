@@ -67,7 +67,8 @@ router.post('/', (req, res) => {
                     success: true,
                     email: result.rows[0].email
                 });
-                sendEmail(process.env.EMAIL_SENDER, email, "Welcome!", "<strong>Welcome to our app!</strong>");
+                sendEmail(process.env.EMAIL_SENDER, email, "Welcome!", "Welcome to our app!",
+                    "<strong>Welcome to our app!</strong>");
             })
             .catch((err) => {
                 //log the error
