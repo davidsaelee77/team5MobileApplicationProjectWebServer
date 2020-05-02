@@ -11,7 +11,7 @@ let getHash = require('../utilities/utils').getHash;
 
 let sendEmail = require('../utilities/utils').sendEmail;
 
-var router = express.Router();
+let router = express.Router();
 
 const bodyParser = require("body-parser");
 //This allows parsing of the body of POST requests, that are encoded in JSON
@@ -44,7 +44,7 @@ router.post('/', (req, res) => {
     //Retrieve data from query params
     const first = req.body.first;
     const last = req.body.last;
-    const username = req.body.email; //username not required for lab. Use email
+    const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     //Verify that the caller supplied all the parameters
@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
                     success: true,
                     email: result.rows[0].email
                 });
-                sendEmail("uwnetid@uw.edu", email, "Welcome!", "<strong>Welcome to our app!</strong>");
+                sendEmail(process.env.EMAIL_SENDER, email, "Welcome!", "<strong>Welcome to our app!</strong>");
             })
             .catch((err) => {
                 //log the error
