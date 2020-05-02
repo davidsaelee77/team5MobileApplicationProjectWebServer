@@ -3,20 +3,13 @@ const express = require('express');
 //Create a new instance of express
 const app = express();
 
+let pool = require('./utilities/utils').pool;
+
 let middleware = require('./utilities/middleware');
 
 const bodyParser = require("body-parser");
 //This allows parsing of the body of POST requests, that are encoded in JSON
 app.use(bodyParser.json());
-
-//Obtain a Pool of DB connections. 
-const { Pool } = require('pg');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    }
-});
 
 app.use('/auth', require('./routes/login.js'));
 
@@ -56,11 +49,11 @@ app.use(function(err, req, res, next) {
 app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    response.write('<h' + 0 + ' style="color:black">Team 5 Spring 2020</h' + 0 + '>');
-    response.write('<h' + 3 + ' style="color:blue">Tyler Lorella</h' + 3 + '>');
-    response.write('<h' + 3 + ' style="color:blue">Patrick Moy</h' + 3 + '>');
-    response.write('<h' + 3 + ' style="color:blue">David Saelee</h' + 3 + '>');
-    response.write('<h' + 3 + ' style="color:blue">Gordon Tran</h' + 3 + '>');
+    response.write('<h' + 3 + ' style="color:black">Team 5 Spring 2020</h' + 3 + '>');
+    response.write('<h' + 6 + ' style="color:blue">Tyler Lorella</h' + 6 + '>');
+    response.write('<h' + 6 + ' style="color:blue">Patrick Moy</h' + 6 + '>');
+    response.write('<h' + 6 + ' style="color:blue">David Saelee</h' + 6 + '>');
+    response.write('<h' + 6 + ' style="color:blue">Gordon Tran</h' + 6 + '>');
     response.end(); //end the response
 });
 

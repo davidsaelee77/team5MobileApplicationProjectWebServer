@@ -150,11 +150,11 @@ router.put("/", (request, response) => {
                     response.send({
                         success: true,
                         message: "Updated: " + result.rows[0].name
-                    });
+                    })
                 } else {
                     response.status(404).send({
                         message: "Name not found"
-                    });
+                    })
                 }
             })
             .catch(err => {
@@ -167,7 +167,7 @@ router.put("/", (request, response) => {
     } else {
         response.status(400).send({
             message: "Missing required information"
-        });
+        })
     }
 });
 
@@ -201,11 +201,11 @@ router.delete("/:name", (request, response) => {
                     response.send({
                         success: true,
                         message: "Deleted: " + result.rows[0].name
-                    });
+                    })
                 } else {
                     response.status(404).send({
                         message: "Name not found"
-                    });
+                    })
                 }
             })
             .catch(err => {
@@ -213,7 +213,7 @@ router.delete("/:name", (request, response) => {
                 // console.log(err)
                 response.status(400).send({
                     message: err.detail
-                });
+                })
             })
     } else {
         response.status(400).send({
