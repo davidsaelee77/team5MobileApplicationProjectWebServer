@@ -15,7 +15,7 @@ router.use(bodyParser.json());
 //Pull in the JWT module along with out a secret key
 let jwt = require('jsonwebtoken');
 let config = {
-    secret: process.env.JSON_SECRET
+    secret: process.env.JSON_WEB_TOKEN
 };
 
 /**
