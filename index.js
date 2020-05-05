@@ -17,6 +17,8 @@ app.use('/auth', require('./routes/register.js'));
 
 app.use('/hello', require('./routes/hello.js'));
 
+app.use('/confirm', require('./routes/confirm.js'));
+
 app.use('/params', require('./routes/params.js'));
 
 app.get("/wait", (request, response) => {

@@ -19,6 +19,10 @@ const bodyParser = require("body-parser");
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json());
 
+config = {
+    secret: process.env.JSON_SECRET
+};
+
 /**
  * @api {post} /register Request to register a user
  * @apiName PostAuth
@@ -65,17 +69,25 @@ router.post('/', (req, res) => {
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user, let the user know
+                let token = jwt.sign({email: email},
+                    config.secret,
+                    {
+                        expiresIn: '2H' // expires in 24 hours
+                    }
+                );
                 res.status(201).send({
                     success: true,
-                    email: result.rows[0].email
+                    email: result.rows[0].email,
                 });
-                let token = jwt.sign({email: email}, process.env.JSON_SECRET, {expiresIn: "2h"});
                 let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
-                let verifyLink = "https://team5-tcss450-server.herokuapp.com/verify/" + token;
-                let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
+                let verifyLink = "https://team5-tcss450-server.herokuapp.com/confirm?name=" + token;
+                //let verifyLink = "localhost:5000/confirm?name=" + token;
+                // let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
                 emailText = emailText + verifyLink;
+                // sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
+                //     emailText, emailHtml);
                 sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
-                    emailText, emailHtml);
+                    emailText);
             })
             .catch((err) => {
                 //log the error

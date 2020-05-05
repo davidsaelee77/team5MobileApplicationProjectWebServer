@@ -1,6 +1,6 @@
 let jwt = require('jsonwebtoken');
 let config = {
-    secret: process.env.JSON_WEB_TOKEN
+    secret: process.env.JSON_SECRET
 };
 
 let checkToken = (req, res, next) => {
