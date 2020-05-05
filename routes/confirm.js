@@ -40,7 +40,7 @@ router.get("/", (req, res) => {
                         .then(result => {
                             res.send({
                                     success: true,
-                                    message: values[0] + "verified!"
+                                    message: values[0] + " verified!"
                             });
                         })
                         .catch(err => {
