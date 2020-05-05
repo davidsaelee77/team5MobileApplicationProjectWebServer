@@ -4,6 +4,8 @@ const express = require('express');
 //We use this create the SHA256 hash
 const crypto = require("crypto");
 
+const jwt = require("jsonwebtoken");
+
 //Access the connection to Heroku Database
 let pool = require('../utilities/utils').pool;
 
@@ -67,8 +69,13 @@ router.post('/', (req, res) => {
                     success: true,
                     email: result.rows[0].email
                 });
-                sendEmail(process.env.EMAIL_SENDER, email, "Welcome!", "Welcome to our app!",
-                    "<strong>Welcome to our app!</strong>");
+                let token = jwt.sign({email: email}, process.env.JSON_SECRET, {expiresIn: "2h"});
+                let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
+                let verifyLink = "https://team5-tcss450-server.herokuapp.com/verify/" + token;
+                let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
+                emailText = emailText + verifyLink;
+                sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
+                    emailText, emailHtml);
             })
             .catch((err) => {
                 //log the error
