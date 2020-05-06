@@ -1,15 +1,12 @@
 {
-    "name": "Lab 4",
+    "name": "Team 5 TCSS 450 Web Service",
     "version": "0.1.0",
-    "description": "The Lab 4 API Documentation",
-    "title": "Lab 4 API Doc",
-    "url" : "https://cfb3-lab4-backend-2020sp.herokuapp.com",
+    "description": "Web Service API Documentation",
+    "title": "Team 5 TCSS 450 Server API Doc",
+    "url" : "https://team5-tcss450-server.herokuapp.com",
     "order": [
-      "Hello",
-      "Params",
       "Wait",
-      "DemoSql",
       "Auth",
-      "Phish"
+      "Confirm"
     ]
   }

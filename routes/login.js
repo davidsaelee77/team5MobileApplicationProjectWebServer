@@ -1,25 +1,44 @@
-//express is the framework we're going to use to handle requests
+/**
+ * Express used for https requests
+ */
 const express = require('express');
 
-//Access the connection to Heroku Database
+/**
+ * Accessing postgresql Heroku database
+ */
 let pool = require('../utilities/utils').pool;
 
+/**
+ * Accessing hash function in utilities
+ */
 let getHash = require('../utilities/utils').getHash;
 
+/**
+ * Using express package routing
+ */
 let router = express.Router();
 
+/**
+ * Package for parsing JSON
+ */
 const bodyParser = require("body-parser");
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json());
 
-//Pull in the JWT module along with out a secret key
+/**
+ * Jsonwebtoken used for creating tokens/verifying
+ */
 let jwt = require('jsonwebtoken');
+
+/**
+ * Config object for jwt creation
+ */
 let config = {
     secret: process.env.JSON_SECRET
 };
 
 /**
- * @api {get} /login Request to sign a user in the system
+ * @api {get} /auth Request to sign a user in the system
  * @apiName GetAuth
  * @apiGroup Auth
  *
@@ -41,7 +60,7 @@ router.get('/', (request, response) => {
     if (!request.headers.authorization || request.headers.authorization.indexOf('Basic ') === -1) {
         return response.status(401).json({ message: 'Missing Authorization Header' })
     }
-    // obtain auth credentials from HTTP Header
+    // Obtain auth credentials from HTTP Header
     const base64Credentials =  request.headers.authorization.split(' ')[1];
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
     const [email, theirPw] = credentials.split(':');

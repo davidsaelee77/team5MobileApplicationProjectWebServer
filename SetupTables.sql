@@ -50,13 +50,6 @@ CREATE TABLE Locations (PrimaryKey SERIAL PRIMARY KEY,
                         FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
 );
 
-DROP TABLE IF EXISTS Demo;
-CREATE TABLE Demo (DemoID SERIAL PRIMARY KEY,
-                        Name VARCHAR(255) NOT NULL UNIQUE,
-                        Message VARCHAR(255)
-);
-
-
 DROP TABLE IF EXISTS Push_Token;
 CREATE TABLE Push_Token (KeyID SERIAL PRIMARY KEY,
                         MemberID INT NOT NULL UNIQUE,

@@ -1,12 +1,24 @@
-//Get the connection to Heroku Database
+/**
+ * Gets the connection to our Heroku Database
+ */
 let pool = require('./sql_conn.js');
 
-
-//We use this create the SHA256 hash
+/**
+ * Crypto module required for hashing
+ */
 const crypto = require("crypto");
 
+/**
+ * Nodemailer allows web service to send emails to users
+ */
 const nodemailer = require("nodemailer");
 
+/**
+ * Nodemailer requires a transporter object for use; using gmail instead of
+ * SMTP for now
+ *
+ * Server email password in environment variables
+ */
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -15,6 +27,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+/**
+ * Sends an email via Nodemailer
+ * @param from {String} email address of sender (Nodemailer will auto set to gmail account mail)
+ * @param receiver {String} email address of recipient
+ * @param subj {String} subject line
+ * @param textMessage {String} email body text
+ */
 function sendEmail(from, receiver, subj, textMessage/*, htmlMessage*/) {
     let mailOptions = {
         from: from,

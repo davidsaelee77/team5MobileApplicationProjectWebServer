@@ -1,11 +1,20 @@
+/**
+ * Jsonwebtoken used for creating tokens/verifying
+ */
 let jwt = require('jsonwebtoken');
+
+/**
+ * Config object for jwt creation
+ */
 let config = {
     secret: process.env.JSON_SECRET
 };
 
+/**
+ * checkToken method used to verify authentication tokens
+ */
 let checkToken = (req, res, next) => {
   let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
-
 
   if (token) {
     if (token.startsWith('Bearer ')) {

@@ -1,35 +1,63 @@
-//express is the framework we're going to use to handle requests
-const express = require('express');
+/**
+ * Express used for https requests
+ */
+const express = require("express");
 
-//We use this create the SHA256 hash
+/**
+ * Crypto module required for hashing
+ */
 const crypto = require("crypto");
 
+/**
+ * Jsonwebtoken used for creating tokens/verifying
+ */
 const jwt = require("jsonwebtoken");
 
-//Access the connection to Heroku Database
+/**
+ * Accessing postgresql Heroku database
+ */
 let pool = require('../utilities/utils').pool;
 
+/**
+ * Accessing hash function in utilities
+ */
 let getHash = require('../utilities/utils').getHash;
 
+/**
+ * sendEmail function in utilities utilizing Nodemailer
+ */
 let sendEmail = require('../utilities/utils').sendEmail;
 
+/**
+ * Using express package routing
+ */
 let router = express.Router();
 
+/**
+ * Package for parsing JSON
+ */
 const bodyParser = require("body-parser");
-//This allows parsing of the body of POST requests, that are encoded in JSON
+
+/**
+ * This allows parsing of the body of POST requests, that are encoded in JSON
+ */
 router.use(bodyParser.json());
 
+/**
+ * Config object for jwt creation
+ */
 config = {
     secret: process.env.JSON_SECRET
 };
 
 /**
- * @api {post} /register Request to register a user
+ * @api {post} /auth Request to register a user
  * @apiName PostAuth
  * @apiGroup Auth
  *
  * @apiParam {String} first a users first name
  * @apiParam {String} last a users last name
+ * @apiParam {String} username a users handle/username *required unique
  * @apiParam {String} email a users email *required unique
  * @apiParam {String} password a users password
  *
@@ -56,29 +84,29 @@ router.post('/', (req, res) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(first && last && username && email && password) {
-        //We're storing salted hashes to make our application more secure
-        //If you're interested as to what that is, and why we should use it
-        //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q
         let salt = crypto.randomBytes(32).toString("hex");
         let salted_hash = getHash(password, salt);
 
-        //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
-        //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email";
         let values = [first, last, username, email, salted_hash, salt];
         pool.query(theQuery, values)
             .then(result => {
-                //We successfully added the user, let the user know
+
+                // User successfully added, create verification link for user
                 let token = jwt.sign({email: email},
                     config.secret,
                     {
                         expiresIn: '2H' // expires in 24 hours
                     }
                 );
+
+                // Response informs user of successful registration
                 res.status(201).send({
                     success: true,
-                    email: result.rows[0].email,
+                    email: result.rows[0].email
                 });
+
+                // Nodemailer sends user verification link
                 let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
                 let verifyLink = "https://team5-tcss450-server.herokuapp.com/confirm?name=" + token;
                 //let verifyLink = "localhost:5000/confirm?name=" + token;
@@ -90,8 +118,6 @@ router.post('/', (req, res) => {
                     emailText);
             })
             .catch((err) => {
-                //log the error
-                //console.log(err)
                 if (err.constraint === "members_username_key") {
                     res.status(400).send({
                         message: "Username exists"
