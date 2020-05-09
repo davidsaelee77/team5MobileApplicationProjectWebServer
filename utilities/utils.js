@@ -14,6 +14,18 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
 /**
+ * Jsonwebtoken used for creating tokens/verifying
+ */
+const jwt = require("jsonwebtoken");
+
+/**
+ * Config object for jwt creation
+ */
+config = {
+    secret: process.env.JSON_SECRET
+};
+
+/**
  * Nodemailer requires a transporter object for use; using gmail instead of
  * SMTP for now
  *
@@ -22,7 +34,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: "team5tcss450server@gmail.com",
+        user: process.env.EMAIL_SENDER,
         pass: process.env.EMAIL_AUTH
     }
 });
@@ -53,6 +65,31 @@ function sendEmail(from, receiver, subj, textMessage/*, htmlMessage*/) {
 }
 
 /**
+ *
+ * @param receiver {String} email address of recipient
+ */
+function sendVerificationEmail(receiver) {
+    let token = jwt.sign({email: receiver},
+        config.secret,
+        {
+            expiresIn: '2H' // expires in 2 hours
+        }
+    );
+    const subj = "Welcome! Verification required";
+
+    // Nodemailer sends user verification link
+    let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
+    let verifyLink = "https://team5-tcss450-server.herokuapp.com/confirm?name=" + token;
+    //let verifyLink = "localhost:5000/support/verify?name=" + token;
+    // let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
+    emailText = emailText + verifyLink;
+    // sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
+    //     emailText, emailHtml);
+    sendEmail(process.env.EMAIL_SENDER, receiver, subj,
+        emailText);
+}
+
+/**
  * Method to get a salted hash.
  * We put this in its own method to keep consistency
  * @param {string} pw the password to hash
@@ -63,5 +100,5 @@ function getHash(pw, salt) {
 }
 
 module.exports = {
-    pool, getHash, sendEmail
+    pool, getHash, sendVerificationEmail
 };

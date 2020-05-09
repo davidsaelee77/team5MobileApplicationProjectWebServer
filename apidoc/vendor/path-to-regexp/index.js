@@ -142,7 +142,7 @@ function replacePath (path, keys) {
       return '(?:' + prefix + '(' + capture + '))?';
     }
 
-    // Basic parameter support.
+    // Basic parameter pages.
     return prefix + '(' + capture + ')';
   }
 

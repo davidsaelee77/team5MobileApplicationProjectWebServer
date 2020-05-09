@@ -26,7 +26,7 @@ let getHash = require('../utilities/utils').getHash;
 /**
  * sendEmail function in utilities utilizing Nodemailer
  */
-let sendEmail = require('../utilities/utils').sendEmail;
+let sendVerificationEmail = require('../utilities/utils').sendVerificationEmail;
 
 /**
  * Using express package routing
@@ -91,31 +91,13 @@ router.post('/', (req, res) => {
         let values = [first, last, username, email, salted_hash, salt];
         pool.query(theQuery, values)
             .then(result => {
-
-                // User successfully added, create verification link for user
-                let token = jwt.sign({email: email},
-                    config.secret,
-                    {
-                        expiresIn: '2H' // expires in 24 hours
-                    }
-                );
-
                 // Response informs user of successful registration
                 res.status(201).send({
                     success: true,
                     email: result.rows[0].email
                 });
 
-                // Nodemailer sends user verification link
-                let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
-                let verifyLink = "https://team5-tcss450-server.herokuapp.com/confirm?name=" + token;
-                //let verifyLink = "localhost:5000/confirm?name=" + token;
-                // let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
-                emailText = emailText + verifyLink;
-                // sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
-                //     emailText, emailHtml);
-                sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
-                    emailText);
+                sendVerificationEmail(result.rows[0].email);
             })
             .catch((err) => {
                 if (err.constraint === "members_username_key") {

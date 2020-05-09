@@ -22,6 +22,7 @@ let router = express.Router();
  * Package for parsing JSON
  */
 const bodyParser = require("body-parser");
+
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(bodyParser.json());
 
@@ -85,19 +86,30 @@ router.get('/', (request, response) => {
 
                 //Did our salted hash match their salted hash?
                 if (ourSaltedHash === theirSaltedHash ) {
-                    //credentials match. get a new JWT
-                    let token = jwt.sign({username: email},
-                        config.secret,
-                        {
-                            expiresIn: '14 days' // expires in 24 hours
-                        }
-                    );
-                    //package and send the results
-                    response.json({
-                        success: true,
-                        message: 'Authentication successful!',
-                        token: token
-                    });
+
+                    let verifyQuery = "SELECT Verification FROM Members WHERE EMAIL=$1";
+                    pool.query(verifyQuery, values)
+                        .then(result => {
+                            if (result.rows[0].verification === 1) {
+                                //credentials match and verified. get a new JWT
+                                let token = jwt.sign({username: email},
+                                    config.secret,
+                                    {
+                                        expiresIn: '14 days' // expires in 14 days
+                                    }
+                                );
+                                //package and send the results
+                                response.json({
+                                    success: true,
+                                    message: 'Authentication successful!',
+                                    token: token
+                                });
+                            } else {
+                                response.status(400).send({
+                                    message: 'Email not yet verified'
+                                });
+                            }
+                        })
                 } else {
                     //credentials dod not match
                     response.status(400).send({

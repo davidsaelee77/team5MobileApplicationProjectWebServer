@@ -90,4 +90,44 @@ router.get("/", (req, res) => {
     }
 });
 
+router.post("/", (req, res) => {
+    if (req.body.name) {
+        let decoded = jwt.decode(req.body.name);
+        let theQuery = "SELECT MemberID FROM Members WHERE Email = $1 AND VERIFICATION = 0";
+        let values = [decoded.email];
+        pool.query(theQuery, values)
+            .then(result => {
+                if (result.rowCount > 0) {
+                    let updateQuery = "UPDATE Members SET Verification = 1 WHERE Email = $1";
+                    pool.query(updateQuery, values)
+                        .then(result => {
+                            res.status(201).send({
+                                success: true,
+                                message: values[0] + " verified!"
+                            });
+                        })
+                        .catch(err => {
+                            res.status(400).send({
+                                message: err.detail
+                            });
+                        })
+                } else {
+                    res.status(400).send({
+                        message: "Unable to verify email currently"
+                    })
+                }
+            })
+            .catch(err => {
+                res.status(400).send({
+                    message: err.detail
+                });
+            });
+    } else {
+        res.status(400);
+        res.send({
+            message: "Invalid verification link"
+        });
+    }
+});
+
 module.exports = router;
