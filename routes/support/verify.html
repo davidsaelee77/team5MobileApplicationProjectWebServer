@@ -22,9 +22,10 @@
 </style>
 <h1>Welcome to <span>Griffin</span></h1><br>
 <h2>(Connect. Forecast. Update.)</h2><title></title>
-
-<form name="verification" action="localhost:5000/confirm" method="post">
-    <input type="hidden" name="token" id="token" value="">
+<!--"https://team5-tcss450-server.herokuapp.com/confirm" method="post"-->
+<!--https://localhost:5000/confirm-->
+<form name="verification" action="https://team5-tcss450-server.herokuapp.com/confirm" method="post">
+    <input type="hidden" name="name" id="token" value="">
     <button type="submit">Verify your email</button>
 </form>
 
@@ -45,6 +46,6 @@
     let button = document.querySelector('form[name="verification"] > button');
     button.addEventListener("click", function() {
         console.log("BUTTON PRESSED!");
-        document.querySelector('form[name="verification"]').submit();
+        document.verification.submit();
     });
 </script>

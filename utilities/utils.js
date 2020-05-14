@@ -80,7 +80,7 @@ function sendVerificationEmail(receiver) {
     // Nodemailer sends user verification link
     let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
     let verifyLink = "https://team5-tcss450-server.herokuapp.com/confirm?name=" + token;
-    //let verifyLink = "localhost:5000/support/verify?name=" + token;
+    // let verifyLink = "http://localhost:5000/support?name=" + token;
     // let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
     emailText = emailText + verifyLink;
     // sendEmail(process.env.EMAIL_SENDER, email, "Welcome! Verification required",
