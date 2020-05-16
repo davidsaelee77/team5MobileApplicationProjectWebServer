@@ -14,6 +14,16 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 /**
+ * Package for parsing JSON
+ */
+const bodyParser = require("body-parser");
+
+/**
+ * UTF-8 Validator module
+ */
+const isValidUTF8 = require('utf-8-validate');
+
+/**
  * Accessing postgresql Heroku database
  */
 let pool = require('../utilities/utils').pool;
@@ -32,11 +42,6 @@ let sendVerificationEmail = require('../utilities/utils').sendVerificationEmail;
  * Using express package routing
  */
 let router = express.Router();
-
-/**
- * Package for parsing JSON
- */
-const bodyParser = require("body-parser");
 
 /**
  * This allows parsing of the body of POST requests, that are encoded in JSON
@@ -84,6 +89,14 @@ router.post('/', (req, res) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(first && last && username && email && password) {
+        const allFields = [first, last, username, email, password];
+        const bufferFields = allFields.map(field => Buffer.from(field));
+        const checkFields = bufferFields.map(buffer => isValidUTF8(buffer));
+        if (checkFields.includes(false)) {
+            res.status(400).send({
+                message: "Non UTF-8 encoding found; cannot process"
+            })
+        }
         let salt = crypto.randomBytes(32).toString("hex");
         let salted_hash = getHash(password, salt);
 
