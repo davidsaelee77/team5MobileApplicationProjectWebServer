@@ -52,6 +52,9 @@ app.use('/support', require('./routes/support/support.js'));
  */
 app.use('/resend/', require('./routes/resend.js'));
 
+app.use('/contact', require('./routes/contact.js'));
+
+
 
 /**
  * Get request to wait 5 seconds before responding (for test purposes, etc.)

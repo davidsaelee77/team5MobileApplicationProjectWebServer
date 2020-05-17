@@ -29,6 +29,11 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 
 /**
+ * This allows parsing of the body of POST requests, that are encoded in url
+ */
+router.use(bodyParser.urlencoded());
+
+/**
  * Config object for jwt creation
  */
 config = {
@@ -92,6 +97,8 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
     if (req.body.name) {
+        console.log(req.body.name);
+        console.log(req.body);
         let decoded = jwt.decode(req.body.name);
         let theQuery = "SELECT MemberID FROM Members WHERE Email = $1 AND VERIFICATION = 0";
         let values = [decoded.email];
@@ -113,7 +120,7 @@ router.post("/", (req, res) => {
                         })
                 } else {
                     res.status(400).send({
-                        message: "Unable to verify email currently"
+                        message: "Email already verified or does not exist"
                     })
                 }
             })

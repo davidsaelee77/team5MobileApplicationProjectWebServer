@@ -67,7 +67,7 @@ router.get('/', (request, response) => {
     const [email, theirPw] = credentials.split(':');
 
     if(email && theirPw) {
-        let theQuery = "SELECT Password, Salt FROM Members WHERE Email=$1";
+        let theQuery = "SELECT Password, Salt, MemberID FROM Members WHERE Email=$1";
         let values = [email];
         pool.query(theQuery, values)
             .then(result => {
@@ -80,6 +80,8 @@ router.get('/', (request, response) => {
                 let salt = result.rows[0].salt;
                 //Retrieve our copy of the password
                 let ourSaltedHash = result.rows[0].password;
+
+                let memberid = result.rows[0].memberid;
 
                 //Combined their password with our salt, then hash
                 let theirSaltedHash = getHash(theirPw, salt);
@@ -102,7 +104,8 @@ router.get('/', (request, response) => {
                                 response.json({
                                     success: true,
                                     message: 'Authentication successful!',
-                                    token: token
+                                    token: token,
+                                    memberid: memberid
                                 });
                             } else {
                                 response.status(400).send({
