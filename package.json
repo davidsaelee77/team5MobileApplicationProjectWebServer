@@ -2,9 +2,7 @@
   "name": "tcss450-t5-server-sp20",
   "version": "1.0.0",
   "description": "TCSS 450 Team 5 SP 2020 Server Code",
-  "apidoc": {
-
-  },
+  "apidoc": {},
   "main": "index.js",
   "scripts": {
     "test": "index.js"

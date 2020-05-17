@@ -47,6 +47,11 @@ app.use('/confirm', require('./routes/confirm.js'));
 
 app.use('/support', require('./routes/support/support.js'));
 
+/**
+ * Using resend.js for route to resend verification email endpoint (POST)
+ */
+app.use('/resend/', require('./routes/resend.js'));
+
 
 /**
  * Get request to wait 5 seconds before responding (for test purposes, etc.)
