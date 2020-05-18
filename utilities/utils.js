@@ -101,7 +101,8 @@ function sendRecoveryEmail(receiver, first, last) {
     // Nodemailer sends user verification link
     let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
         + " tied with this email be reset, if this was not you, contact support!\n"
-        + "Please click on the following link to continue with the password recovery process\n";
+        + "Please click on the following link to continue with the password recovery"
+        + " process, the link will expire in an hour.\n";
 
     //TODO: needs splash page
     let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
@@ -124,5 +125,5 @@ function getHash(pw, salt) {
 }
 
 module.exports = {
-    pool, getHash, sendVerificationEmail
+    pool, getHash, sendVerificationEmail, sendRecoveryEmail
 };
