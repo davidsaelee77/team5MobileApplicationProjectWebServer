@@ -54,7 +54,9 @@ app.use('/contact', require('./routes/contact.js'));
  */
 app.use('/resend', require('./routes/resend.js'));
 
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'));
 
+app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'));
 
 /**
  * Get request to wait 5 seconds before responding (for test purposes, etc.)

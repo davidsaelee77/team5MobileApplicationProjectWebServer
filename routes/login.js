@@ -94,7 +94,11 @@ router.get('/', (request, response) => {
                         .then(result => {
                             if (result.rows[0].verification === 1) {
                                 //credentials match and verified. get a new JWT
-                                let token = jwt.sign({username: email},
+                                let token = jwt.sign(
+                                    {
+                                        username: email,
+                                        memberid: result.rows[0].memberid
+                                    },
                                     config.secret,
                                     {
                                         expiresIn: '14 days' // expires in 14 days

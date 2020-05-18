@@ -99,6 +99,8 @@ function getHash(pw, salt) {
     return crypto.createHash("sha256").update(pw + salt).digest("hex");
 }
 
+let messaging = require('./pushy_utilities.js');
+
 module.exports = {
-    pool, getHash, sendVerificationEmail
+    pool, getHash, sendVerificationEmail, messaging
 };
