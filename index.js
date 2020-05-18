@@ -54,6 +54,11 @@ app.use('/contact', require('./routes/contact.js'));
  */
 app.use('/resend', require('./routes/resend.js'));
 
+/**
+ * Using recovery.js for route to recover forgotten password endpoint (POST)
+ */
+app.use('/recovery', require('./routes/recovery.js'));
+
 
 
 /**

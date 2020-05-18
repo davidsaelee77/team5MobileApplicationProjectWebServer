@@ -89,6 +89,30 @@ function sendVerificationEmail(receiver) {
         emailText);
 }
 
+function sendRecoveryEmail(receiver, first, last) {
+    let token = jwt.sign({email: receiver},
+        config.secret,
+        {
+            expiresIn: '1H' // expires in 1 hours
+        }
+    );
+    const subj = "Griffon Password Recovery";
+
+    // Nodemailer sends user verification link
+    let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
+        + " tied with this email be reset, if this was not you, contact support!\n"
+        + "Please click on the following link to continue with the password recovery process\n";
+
+    //TODO: needs splash page
+    let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
+    
+    // let recoveryLink = "http://localhost:5000/support?name=" + token;
+    // let emailHtml = emailText + '<a href="' + recoveryLink + token + '"><H2>Verification link</H2></a>';
+    emailText = emailText + recoveryLink;
+    sendEmail(process.env.EMAIL_SENDER, receiver, subj,
+        emailText);
+}
+
 /**
  * Method to get a salted hash.
  * We put this in its own method to keep consistency
