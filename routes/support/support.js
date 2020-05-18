@@ -36,7 +36,21 @@ let config = {
 };
 
 router.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname + '/verify.html'));
+    if (req.query.mode) {
+        if (req.query.mode === 'r') {
+            res.sendFile(path.join(__dirname + '/reset.html'));
+        } else if (req.query.mode === 'v') {
+            res.sendFile(path.join(__dirname + '/verify.html'));
+        } else {
+            res.status(404).send({
+                message: "No such path exists"
+            });
+        }
+    } else {
+        res.status(404).send({
+            message: "No such path exists"
+        });
+    }
 });
 
 module.exports = router;

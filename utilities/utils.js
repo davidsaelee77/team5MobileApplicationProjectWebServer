@@ -79,7 +79,7 @@ function sendVerificationEmail(receiver) {
 
     // Nodemailer sends user verification link
     let emailText = "Welcome to our app!\n\nIn order to use our features, please verify your email at:\n";
-    let verifyLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
+    let verifyLink = "https://team5-tcss450-server.herokuapp.com/support?mode=v&name=" + token;
     // let verifyLink = "http://localhost:5000/support?name=" + token;
     // let emailHtml = emailText + '<a href="' + verifyLink + token + '"><H2>Verification link</H2></a>';
     emailText = emailText + verifyLink;
@@ -96,7 +96,7 @@ function sendRecoveryEmail(receiver, first, last) {
             expiresIn: '1H' // expires in 1 hours
         }
     );
-    const subj = "Griffon Password Recovery";
+    const subj = "Griffin Password Recovery";
 
     // Nodemailer sends user verification link
     let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
@@ -104,7 +104,7 @@ function sendRecoveryEmail(receiver, first, last) {
         + "Please click on the following link to continue with the password recovery process\n";
 
     //TODO: needs splash page
-    let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
+    let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?mode=r&name=" + token;
     
     // let recoveryLink = "http://localhost:5000/support?name=" + token;
     // let emailHtml = emailText + '<a href="' + recoveryLink + token + '"><H2>Verification link</H2></a>';

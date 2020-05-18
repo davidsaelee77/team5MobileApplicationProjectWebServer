@@ -37,14 +37,14 @@ config = {
 
 router.post('/', (request, response) => {
     response.type("application/json");
-    const email = request.body.email
+    const email = request.body.email;
 
     //when a resend verify email is being sent, we know a valid email has already been entered
     try {
         sendVerificationEmail(email);
         response.status(200).send({
             success: true,
-            message: "Email succesfully sent!"
+            message: "Email successfully sent!"
         });
     } catch (err) {
         response.status(400).send({

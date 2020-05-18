@@ -24,9 +24,9 @@
 <h2>(Connect. Forecast. Update.)</h2><title></title>
 <!--"https://team5-tcss450-server.herokuapp.com/confirm" method="post"-->
 <!--https://localhost:5000/confirm-->
-<form name="verification" action="https://team5-tcss450-server.herokuapp.com/confirm" method="post">
+<form name="reset" action="https://team5-tcss450-server.herokuapp.com/confirm" method="post">
     <input type="hidden" name="name" id="token" value="">
-    <button type="submit">Verify your email</button>
+    <button type="submit">Reset your password</button>
 </form>
 
 <script>
@@ -43,7 +43,7 @@
         }
     };
 
-    let button = document.querySelector('form[name="verification"] > button');
+    let button = document.querySelector('form[name="reset"] > button');
     button.addEventListener("click", function() {
         console.log("BUTTON PRESSED!");
         document.reset.submit();

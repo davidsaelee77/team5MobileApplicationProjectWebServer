@@ -92,7 +92,7 @@ router.get('/', (request, response) => {
                     let verifyQuery = "SELECT Verification FROM Members WHERE EMAIL=$1";
                     pool.query(verifyQuery, values)
                         .then(result => {
-                            if (result.rows[0].verification === 1) {
+                            if (result.rows[0].reset === 1) {
                                 //credentials match and verified. get a new JWT
                                 let token = jwt.sign(
                                     {
