@@ -47,12 +47,12 @@ app.use('/confirm', require('./routes/confirm.js'));
 
 app.use('/support', require('./routes/support/support.js'));
 
+app.use('/contact', require('./routes/contact.js'));
+
 /**
  * Using resend.js for route to resend verification email endpoint (POST)
  */
-app.use('/resend/', require('./routes/resend.js'));
-
-app.use('/contact', require('./routes/contact.js'));
+app.use('/resend', require('./routes/resend.js'));
 
 
 

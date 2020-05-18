@@ -9,6 +9,11 @@ const express = require("express");
 let sendVerificationEmail = require('../utilities/utils').sendVerificationEmail;
 
 /**
+ * Jsonwebtoken used for creating tokens/verifying
+ */
+const jwt = require("jsonwebtoken");
+
+/**
  * Using express package routing
  */
 let router = express.Router();
@@ -18,9 +23,20 @@ let router = express.Router();
  */
 const bodyParser = require("body-parser");
 
+/**
+ * This allows parsing of the body of POST requests, that are encoded in JSON
+ */
+router.use(bodyParser.json());
+
+/**
+ * Config object for jwt creation
+ */
+config = {
+    secret: process.env.JSON_SECRET
+};
 
 router.post('/', (request, response) => {
-    
+    response.type("application/json");
     const email = request.body.email
 
     //when a resend verify email is being sent, we know a valid email has already been entered
@@ -32,7 +48,9 @@ router.post('/', (request, response) => {
         });
     } catch (err) {
         response.status(400).send({
-            message: "Unable to resend verification email"
+            message: err.message
         });
     }
 });
+
+module.exports = router;
