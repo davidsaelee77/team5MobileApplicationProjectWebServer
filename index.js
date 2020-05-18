@@ -54,12 +54,14 @@ app.use('/contact', require('./routes/contact.js'));
  */
 app.use('/resend', require('./routes/resend.js'));
 
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'));
 /**
  * Using recovery.js for route to recover forgotten password endpoint (POST)
  */
 app.use('/recovery', require('./routes/recovery.js'));
 
 
+app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'));
 
 /**
  * Get request to wait 5 seconds before responding (for test purposes, etc.)
