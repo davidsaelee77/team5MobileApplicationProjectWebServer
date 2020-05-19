@@ -96,7 +96,7 @@ function sendRecoveryEmail(receiver, first, last) {
         },
         config.secret,
         {
-            expiresIn: '15 * 60' // expires in 15 minutes
+            expiresIn: '1H' //expires 1 hour 
         }
     );
     const subj = "Griffin Password Recovery";
@@ -105,7 +105,7 @@ function sendRecoveryEmail(receiver, first, last) {
     let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
         + " tied to this email be reset. If this was not you, please contact support!\n"
         + "Please click on the following link to continue with the password recovery process. " +
-        "This link will expire in 15 minutes.\n";
+        "This link will expire in 1 hour.\n";
 
     //TODO: needs splash page
     let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?mode=r&name=" + token;
