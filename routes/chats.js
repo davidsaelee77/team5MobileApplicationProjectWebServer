@@ -4,10 +4,21 @@ const express = require('express')
 //Access the connection to Heroku Database
 let pool = require('../utilities/utils').pool
 
+
 var router = express.Router()
 
 //This allows parsing of the body of POST requests, that are encoded in JSON
-router.use(require("body-parser").json())
+//router.use(require("body-parser").json())
+
+/**
+ * Package for parsing JSON
+ */
+const bodyParser = require("body-parser");
+
+/**
+ * This allows parsing of the body of POST requests, that are encoded in JSON
+ */
+router.use(bodyParser.json());
 
 /**
  * @apiDefine JSONError
@@ -212,7 +223,8 @@ router.get("/:chatId", (request, response, next) => {
         })
     } else if (isNaN(request.params.chatId)) {
         response.status(400).send({
-            message: "Malformed parameter. chatId must be a number"
+            message: "Malformed parameter. chatId must be a number",
+            chatId: request.params.chatId
         })
     } else {
         next()
@@ -257,6 +269,13 @@ router.get("/:chatId", (request, response, next) => {
                 })
             })
 });
+
+// router.get("/", (request, response) => {
+//     response.status(200).send({
+//         message:"yo"
+//     })
+//     //do nothing?
+// });
 
 /**
  * @api {delete} /chats/:chatId?/:email? Request delete a user from a chat
