@@ -51,6 +51,8 @@ app.use('/reset', require('./routes/reset.js'));
 
 app.use('/contact', require('./routes/contact.js'));
 
+app.use('/weather', require('./routes/weather.js'));
+
 /**
  * Using resend.js for route to resend verification email endpoint (POST)
  */
