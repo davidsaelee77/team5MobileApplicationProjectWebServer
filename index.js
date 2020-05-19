@@ -70,6 +70,16 @@ app.use('/recovery', require('./routes/recovery.js'));
  */
 app.use('/changePassword', require('./routes/changePassword.js'));
 
+/**
+ * Using chatData.js for route to retrieve conversations that a user is in endpoint (GET)
+ */
+app.use('/chatData', require('./routes/chatData.js'));
+
+/**
+ * Using chats.js for route to retrieve conversation data, and send data
+ */
+app.use('/chats', require('./routes/chats.js'));
+
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'));
 
