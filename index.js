@@ -55,10 +55,16 @@ app.use('/contact', require('./routes/contact.js'));
 app.use('/resend', require('./routes/resend.js'));
 
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'));
+
 /**
  * Using recovery.js for route to recover forgotten password endpoint (POST)
  */
 app.use('/recovery', require('./routes/recovery.js'));
+
+/**
+ * Using changePassword.js for route to change password endpoint (POST)
+ */
+app.use('/changePassword', require('./routes/changePassword.js'));
 
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'));

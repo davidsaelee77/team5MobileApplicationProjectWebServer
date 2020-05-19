@@ -114,6 +114,33 @@ function sendRecoveryEmail(receiver, first, last) {
         emailText);
 }
 
+//TODO: Really Tyler? Abstract this out bruh... or just use sendEmail
+function sendChangePasswordEmail(receiver, first, last) {
+    let token = jwt.sign({email: receiver},
+        config.secret,
+        {
+            expiresIn: '1H' // expires in 1 hours
+        }
+    );
+    const subj = "Griffon Change Password Request";
+
+    // Nodemailer sends user verification link
+    let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
+        + " tied with this email be changed, if this was not you, contact support, your account may"
+        + " have been comprimised!\n"
+        + "Please click on the following link to continue with the password change request"
+        + ", the link will expire in 1 hour.\n";
+
+    //TODO: needs splash page
+    let passwordChangeLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
+    
+    // let recoveryLink = "http://localhost:5000/support?name=" + token;
+    // let emailHtml = emailText + '<a href="' + recoveryLink + token + '"><H2>Verification link</H2></a>';
+    emailText = emailText + passwordChangeLink;
+    sendEmail(process.env.EMAIL_SENDER, receiver, subj,
+        emailText);
+}
+
 /**
  * Method to get a salted hash.
  * We put this in its own method to keep consistency
@@ -127,5 +154,5 @@ function getHash(pw, salt) {
 let messaging = require('./pushy_utilities.js');
 
 module.exports = {
-    pool, getHash, sendVerificationEmail, sendRecoveryEmail, messaging
+    pool, getHash, sendVerificationEmail, sendRecoveryEmail, sendChangePasswordEmail, messaging
 };
