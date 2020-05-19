@@ -48,6 +48,8 @@ let router = express.Router();
  */
 router.use(bodyParser.json());
 
+router.use(bodyParser.urlencoded());
+
 /**
  * Config object for jwt creation
  */
