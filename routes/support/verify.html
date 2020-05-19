@@ -31,21 +31,14 @@
 
 <script>
     window.onload = function getParameterFromUrl() {
-        console.log("LOADED!");
         let urlParamString = window.location.search.substring(1);
         let paramPairs = urlParamString.split("&");
         for (let i = 0; i < paramPairs.length; i++) {
             let keyValuePair = paramPairs[i].split("=");
             if (keyValuePair[0] === "name") {
                 document.getElementById("token").value = keyValuePair[1];
-                console.log(keyValuePair[1]);
             }
         }
     };
 
-    let button = document.querySelector('form[name="verification"] > button');
-    button.addEventListener("click", function() {
-        console.log("BUTTON PRESSED!");
-        document.reset.submit();
-    });
 </script>

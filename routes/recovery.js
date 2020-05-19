@@ -42,7 +42,7 @@ config = {
 
 router.post('/', (request, response) => {
     response.type("application/json");
-    const email = request.body.email
+    const email = request.body.email;
 
     let theQuery = "SELECT FirstName, LastName FROM Members WHERE Email=$1";
     let values = [email];
@@ -56,10 +56,10 @@ router.post('/', (request, response) => {
                 response.status(404).send({
                     acknowledge: true,
                     message: 'Email not found'
-                })
+                });
                 return;
             }
-            let first = result.rows[0].firstname
+            let first = result.rows[0].firstname;
             let last = result.rows[0].lastname;
 
             

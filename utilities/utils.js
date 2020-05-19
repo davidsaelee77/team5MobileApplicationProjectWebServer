@@ -90,18 +90,22 @@ function sendVerificationEmail(receiver) {
 }
 
 function sendRecoveryEmail(receiver, first, last) {
-    let token = jwt.sign({email: receiver},
+    let token = jwt.sign({
+            email: receiver,
+            mode: "reset"
+        },
         config.secret,
         {
-            expiresIn: '1H' // expires in 1 hours
+            expiresIn: '15 * 60' // expires in 15 minutes
         }
     );
     const subj = "Griffin Password Recovery";
 
     // Nodemailer sends user verification link
     let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password" 
-        + " tied with this email be reset, if this was not you, contact support!\n"
-        + "Please click on the following link to continue with the password recovery process\n";
+        + " tied to this email be reset. If this was not you, please contact support!\n"
+        + "Please click on the following link to continue with the password recovery process. " +
+        "This link will expire in 15 minutes.\n";
 
     //TODO: needs splash page
     let recoveryLink = "https://team5-tcss450-server.herokuapp.com/support?mode=r&name=" + token;
@@ -126,5 +130,5 @@ function getHash(pw, salt) {
 let messaging = require('./pushy_utilities.js');
 
 module.exports = {
-    pool, getHash, sendVerificationEmail, messaging
+    pool, getHash, sendVerificationEmail, sendRecoveryEmail, messaging
 };

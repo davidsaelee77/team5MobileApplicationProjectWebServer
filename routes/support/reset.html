@@ -1,5 +1,14 @@
 <style>
     body {
+        text-shadow:
+        -1px -1px 0 #ffffff,
+        0   -1px 0 #ffffff,
+        1px -1px 0 #ffffff,
+        1px  0   0 #ffffff,
+        1px  1px 0 #ffffff,
+        0    1px 0 #ffffff,
+        -1px  1px 0 #ffffff,
+        -1px  0   0 #ffffff;
         padding-top: 80px;
         text-align: center;
         font-family: monaco, monospace;
@@ -8,44 +17,93 @@
     }
     h1, h2 {
         display: inline-block;
-        background: #fff;
+        color: black;
+        text-shadow:
+                -1px -1px 0 #ffffff,
+                0   -1px 0 #ffffff,
+                1px -1px 0 #ffffff,
+                1px  0   0 #ffffff,
+                1px  1px 0 #ffffff,
+                0    1px 0 #ffffff,
+                -1px  1px 0 #ffffff,
+                -1px  0   0 #ffffff;
     }
     h1 {
-        font-size: 30px
+        font-size: 50px
     }
     h2 {
-        font-size: 20px;
+        font-size: 30px;
+        color: #85754d
     }
     span {
-        background: #8832a4;
+        color: #4b2e83;
+    }
+
+    label{
+        display: inline-block;
+        clear: left;
+        width: 250px;
+        text-align: left; /*Change to right here if you want it close to the inputs*/
+        color: white;
+        font-size: 20px;
+        text-shadow:
+                -1px -1px 0 #000,
+                0   -1px 0 #000,
+                1px -1px 0 #000,
+                1px  0   0 #000,
+                1px  1px 0 #000,
+                0    1px 0 #000,
+                -1px  1px 0 #000,
+                -1px  0   0 #000;
+    }
+    input {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    button {
+        display: inline-block;
     }
 </style>
 <h1>Welcome to <span>Griffin</span></h1><br>
 <h2>(Connect. Forecast. Update.)</h2><title></title>
-<!--"https://team5-tcss450-server.herokuapp.com/confirm" method="post"-->
-<!--https://localhost:5000/confirm-->
-<form name="reset" action="https://team5-tcss450-server.herokuapp.com/confirm" method="post">
+<!--"https://team5-tcss450-server.herokuapp.com/reset"-->
+<!--localhost:5000/reset-->
+<div>
+<form name="reset" id="reset" action="https://team5-tcss450-server.herokuapp.com/reset" method="post" onSubmit="return checkForm(this)">
     <input type="hidden" name="name" id="token" value="">
-    <button type="submit">Reset your password</button>
-</form>
+    <label for="password">Password:</label>
+    <input type ="password" name="password" id="password" value="" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required oninput="setCustomValidity('')">
+    <br/>
+    <label for="confirm">Confirm password:</label>
+    <input type ="password" name="confirm" id="confirm" value="" required oninput="setCustomValidity('')"><br/>
+    <input type="submit" value ="Reset your password">
 
-<script>
-    window.onload = function getParameterFromUrl() {
-        console.log("LOADED!");
-        let urlParamString = window.location.search.substring(1);
-        let paramPairs = urlParamString.split("&");
-        for (let i = 0; i < paramPairs.length; i++) {
-            let keyValuePair = paramPairs[i].split("=");
-            if (keyValuePair[0] === "name") {
-                document.getElementById("token").value = keyValuePair[1];
-                console.log(keyValuePair[1]);
+    <script>
+        function checkForm(form) {
+            if (form.password.value !== form.confirm.value) {
+                form.confirm.setCustomValidity("Passwords do not match!");
+                form.confirm.focus();
+                return false;
+            } else {
+                return true;
             }
         }
-    };
 
-    let button = document.querySelector('form[name="reset"] > button');
-    button.addEventListener("click", function() {
-        console.log("BUTTON PRESSED!");
-        document.reset.submit();
-    });
-</script>
+        window.onload = function getParameterFromUrl() {
+            let urlParamString = window.location.search.substring(1);
+            let paramPairs = urlParamString.split("&");
+            for (let i = 0; i < paramPairs.length; i++) {
+                let keyValuePair = paramPairs[i].split("=");
+                if (keyValuePair[0] === "name") {
+                    document.getElementById("token").value = keyValuePair[1];
+                }
+            }
+        };
+
+    </script>
+</form>
+
+
+</div>
+<body>Password must be at least 8 characters, contain a special character, a number, and both upper/lowercase letters.</body>

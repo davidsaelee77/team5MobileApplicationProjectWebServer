@@ -47,6 +47,8 @@ app.use('/confirm', require('./routes/confirm.js'));
 
 app.use('/support', require('./routes/support/support.js'));
 
+app.use('/reset', require('./routes/reset.js'));
+
 app.use('/contact', require('./routes/contact.js'));
 
 /**
