@@ -135,7 +135,7 @@ function sendChangePasswordEmail(receiver, first, last) {
         + ", the link will expire in 1 hour.\n";
 
     //TODO: needs splash page
-    let passwordChangeLink = "https://team5-tcss450-server.herokuapp.com/support?name=" + token;
+    let passwordChangeLink = "https://team5-tcss450-server.herokuapp.com/support?mode=r&name=" + token;
 
     // let recoveryLink = "http://localhost:5000/support?name=" + token;
     // let emailHtml = emailText + '<a href="' + recoveryLink + token + '"><H2>Verification link</H2></a>';
