@@ -80,9 +80,9 @@ config = {
 router.post('/', (req, res) => {
     res.type("application/json");
     res.status(200).send({
-        name: name,
-        pw: password,
-        confirm: confirm
+        name: req.body.name,
+        pw: req.body.password,
+        confirm: req.body.confirm
     });
     if (req.body.name && req.body.password && req.body.confirm && req.body.password === req.body.confirm) {
         let decoded = jwt.decode(req.body.name);
