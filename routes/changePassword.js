@@ -69,7 +69,7 @@ router.post('/', (request, response) => {
             //TODO: implement send password
             sendChangePasswordEmail(email, first, last);
 
-            response.status(404).send({
+            response.status(200).send({
                 acknowledge: true
             })
         })

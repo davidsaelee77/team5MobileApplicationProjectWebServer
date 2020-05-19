@@ -125,7 +125,7 @@ function sendChangePasswordEmail(receiver, first, last) {
             expiresIn: '1H' // expires in 1 hours
         }
     );
-    const subj = "Griffon Change Password Request";
+    const subj = "Griffin Change Password Request";
 
     // Nodemailer sends user verification link
     let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password"
