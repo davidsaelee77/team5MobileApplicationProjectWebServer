@@ -1,7 +1,7 @@
 {
-  "name": "tcss450-t5-server-sp20",
+  "name": "Griffin",
   "version": "1.0.0",
-  "description": "TCSS 450 Team 5 SP 2020 Server Code",
+  "description": "Griffin Webservice Code",
   "apidoc": {},
   "main": "index.js",
   "scripts": {
