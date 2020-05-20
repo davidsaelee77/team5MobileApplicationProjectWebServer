@@ -4,11 +4,15 @@ const express = require('express');
 //Access the connection to Heroku Database
 let pool = require('../utilities/utils').pool;
 
+/**
+ * Using express package routing
+ */
 var router = express.Router();
 
 //This allows parsing of the body of POST requests, that are encoded in JSON
 router.use(require("body-parser").json());
 
+//message function imported from utils, that will allow pushy notifications to be sent out
 let msg_functions = require('../utilities/utils').messaging;
 
 /**
@@ -77,6 +81,8 @@ router.post("/", (request, response, next) => {
     //validate memberid exists in the chat
     let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
     let values = [request.body.chatId, request.decoded.memberid];
+    //TODO: Remove logger
+    console.log("decoded id: ", request.decoded.memberid);
 
     pool.query(query, values)
         .then(result => {

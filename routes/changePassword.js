@@ -42,6 +42,30 @@ config = {
     secret: process.env.JSON_SECRET
 };
 
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */
+
+/**
+ * @api {post} /messages Request send a particular user's email address a password change request
+ * @apiName PostChangePassword
+ * @apiGroup ChangePassword
+ *
+ * @apiDescription Adds the message from the user associated with the required JWT.
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {Number} chatId the id of th chat to insert this message into
+ * @apiParam {String} message a message to store
+ *
+ * @apiSuccess (Success 201) {boolean} acknowledge true when the service has succesfully performed the query
+ * regardless if the email passed in exists or not
+ *
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiUse JSONError
+ */
 router.post('/', (request, response) => {
     response.type("application/json");
     const email = request.body.email
@@ -55,21 +79,18 @@ router.post('/', (request, response) => {
             if (result.rowCount == 0) {
                 //email does not match
                 //TODO: Remove message, change status code?
-                response.status(404).send({
+                response.status(201).send({
                     acknowledge: true,
-                    message: 'Email not found'
                 })
                 return;
             }
             let first = result.rows[0].firstname
             let last = result.rows[0].lastname;
 
-            
             //send password reset email using firstname and lastname
-            //TODO: implement send password
             sendChangePasswordEmail(email, first, last);
 
-            response.status(200).send({
+            response.status(201).send({
                 acknowledge: true
             })
         })
