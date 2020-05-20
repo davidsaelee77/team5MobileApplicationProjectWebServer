@@ -38,9 +38,37 @@ let router = express.Router();
  */
 router.use(bodyParser.json());
 
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */
+
+ /**
+ * @api {get} /contact Request to get all contacts of the requesters
+ * @apiName GetContact
+ * @apiGroup Contact
+ *
+ * @apiDescription Request to get all of the contacts that the requester has
+ *
+ * @apiParam {Number} memberId the member to look up.
+ *
+ * @apiSuccess {Object[]} messages List of contacts from the contacts table
+ * @apiSuccess {String} messages.memberId_A The user that is getting their contacts
+ * @apiSuccess {String} messages.memberId The id for the member that memberId_A is connected with
+ * @apiSuccess {String} messages.Username memberId's username
+ * @apiSuccess {String} messages.FirstName The first name for memberId 
+ * @apiSuccess {String} messages.LastName The last name for memberId
+ *
+ * @apiError (400: Missing Parameters) {String} message "No username provided"
+ *
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiUse JSONError
+ */
 router.get("/", (req, res) => {
     if (req.query.memberid) {
-        let theQuery = "SELECT MemberID_A, MemberID, Username, FirstName, LastName FROM Members INNER JOIN Contacts ON Members.memberid = Contacts.memberid_b";
+        let theQuery = "SELECT MemberID_A, MemberID, Username, FirstName, LastName FROM Members" 
+            + "INNER JOIN Contacts ON Members.memberid = Contacts.memberid_b";
         pool.query(theQuery)
             .then(result => {
                 if (result.rowCount > 0) {
@@ -73,6 +101,21 @@ router.get("/", (req, res) => {
     }
 });
 
+/**
+ * @api {delete} /contact Request to delete a contact between two users
+ * @apiName DeleteContact
+ * @apiGroup Contact
+ *
+ * @apiParam {Number} memberId_A the id of the first column for the contact to be deleted
+ * @apiParam {Number} memberId_B the id of the second column for the contact to be deleted
+ * 
+ * @apiSuccess {boolean} success true when the contact is deleted
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberId must be a number" 
+ * @apiError (404: User Not Found) {String} message "Contact does not exist"
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ */
 router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
         //validate on empty parameters
         if (!request.params.memberID_A || !request.params.memberID_B) {
@@ -125,6 +168,27 @@ router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
     }
 );
 
+/**
+ * @api {post} /contacts Request to add a contact between two users
+ * @apiName PostContact
+ * @apiGroup Contact
+ *
+ * @apiDescription Adds a contact between two memberIDs
+ *
+ * @apiParam {Number} memberId_A the id of member to contact from
+ * @apiParam {Number} memberId_B the id of member to contact to
+ *
+ * @apiSuccess (Success 201) {boolean} success true when the contact is inserted
+ *
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberId must be a number" 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiError (404: Member Not Found) {String} message "Member not found"
+ * @apiError (404: Contact Not Found) {String} message "Contact does not exist"
+ * 
+ * @apiUse JSONError
+ */
 router.post("/", (request, response, next) => {
     //validate on empty parameters
     if (!request.body.memberid_a || !request.body.memberid_b) {
@@ -167,13 +231,14 @@ router.post("/", (request, response, next) => {
                 //TODO: Do something here
                 next();
             } else {
-                response.status(400).send({
-                    "message": "unknown error"
+                response.status(404).send({
+                    //"message": "unknown error"
+                    "message": "Contact does not exist"
                 });
             }
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error on insert",
+            //message: "SQL Error on insert",
             error: err
         });
     });
@@ -190,12 +255,12 @@ router.post("/", (request, response, next) => {
                 msg_functions.sendMessageToIndividual(
                     entry.token,
                     response.message));
-            response.send({
+            response.status(201).send({
                 success:true
             });
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error on select from push token",
+            //message: "SQL Error on select from push token",
             error: err
         });
     });
