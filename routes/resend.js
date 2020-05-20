@@ -35,6 +35,19 @@ config = {
     secret: process.env.JSON_SECRET
 };
 
+/**
+ * @api {post} /resend Request to register a user
+ * @apiName PostResend
+ * @apiGroup Resend
+ *
+ * @apiParam {String} email a users email for resending a verification email
+ *
+ * @apiSuccess (Success 200) {boolean} success true when the name is inserted
+ * @apiSuccess (Success 200) {String} email the email of the user inserted
+ *
+ * @apiError (400: Bad Request) {String} message "Email send request failed"
+ *
+ */
 router.post('/', (request, response) => {
     response.type("application/json");
     const email = request.body.email;

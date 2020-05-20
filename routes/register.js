@@ -76,6 +76,10 @@ config = {
  * @apiError (400: Email exists) {String} message "Email exists"
  *
  * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiError (400: Encoding Error) {String} message "Encoding incompatible"
+ *
+ * @apiError (400: Parameters Invalid) {String} message "Invalid parameters for request"
  */
 router.post('/', (req, res) => {
     res.type("application/json");
@@ -96,6 +100,12 @@ router.post('/', (req, res) => {
             res.status(400).send({
                 message: "Non UTF-8 encoding found; cannot process"
             })
+        }
+        let passwordTest = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+        if (!passwordTest.test(password) || username.length > 32 || username.length < 4 || email.includes("@")) {
+            res.status(400).send({
+                message: "Invalid parameters!"
+            });
         }
         let salt = crypto.randomBytes(32).toString("hex");
         let salted_hash = getHash(password, salt);

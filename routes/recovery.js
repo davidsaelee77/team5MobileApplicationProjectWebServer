@@ -40,6 +40,21 @@ config = {
     secret: process.env.JSON_SECRET
 };
 
+/**
+ * @api {post} /recovery Request to register a user
+ * @apiName PostRecovery
+ * @apiGroup Recovery
+ *
+ * @apiParam {String} email a users email
+ *
+ * @apiSuccess (Success 201) {boolean} acknowledge true when request is received
+ * @apiSuccess (Success 201) {String} message "Recovery email sent!"
+ *
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiError (404: Email Not Found) {String} message "Email not found"
+ *
+ */
 router.post('/', (request, response) => {
     response.type("application/json");
     const email = request.body.email;
@@ -67,8 +82,9 @@ router.post('/', (request, response) => {
             //TODO: implement send password
             sendRecoveryEmail(email, first, last);
 
-            response.status(404).send({
-                acknowledge: true
+            response.status(201).send({
+                acknowledge: true,
+                message: "Recovery email sent"
             })
         })
         .catch((err) => {

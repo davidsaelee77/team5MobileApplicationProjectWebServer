@@ -35,12 +35,25 @@ let config = {
     secret: process.env.JSON_SECRET
 };
 
+/**
+ * @api {get} /support Request for support page
+ * @apiName GetSupport
+ * @apiGroup Support
+ *
+ * @apiParam {String} mode Type of support page requested (r for reset, v for verification)
+ * @apiParam {String} name JWT token containing name data
+ *
+ * @apiSuccess (Success 201) {HTML} path Redirects to appropriate support page
+ *
+ * @apiError (404: Not Found) {String} message "No such path exists"
+ *
+ */
 router.get("/", (req, res) => {
     if (req.query.mode) {
         if (req.query.mode === 'r') {
-            res.sendFile(path.join(__dirname + '/reset.html'));
+            res.status(200).sendFile(path.join(__dirname + '/reset.html'));
         } else if (req.query.mode === 'v') {
-            res.sendFile(path.join(__dirname + '/verify.html'));
+            res.status(200).sendFile(path.join(__dirname + '/verify.html'));
         } else {
             res.status(404).send({
                 message: "No such path exists"

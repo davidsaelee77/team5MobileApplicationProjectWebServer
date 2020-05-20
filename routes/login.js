@@ -48,6 +48,7 @@ let config = {
  * @apiSuccess {boolean} success true when the name is found and password matches
  * @apiSuccess {String} message Authentication successful!
  * @apiSuccess {String} token JSON Web Token
+ * @apiSuccess {String} memberid Member ID of user
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  *

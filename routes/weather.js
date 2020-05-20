@@ -1,17 +1,51 @@
+/**
+ * Get open weather API key from environment/config vars
+ */
 const WEATHER_KEY = process.env.OWM_API_KEY;
 
-//express is the framework we're going to use to handle requests
+/**
+ * Express used for http requests
+ */
 const express = require('express');
 
-//request module is needed to make a request to a web service
+/**
+ * Request module used for requests to other APIs
+ */
 const request = require('request');
 
+/**
+ * Express package routing
+ */
 const router = express.Router();
 
+/**
+ * Number of hourly weather data instances to show
+ */
 const TOTAL_HOURLY = 24;
 
+/**
+ * Number of daily weather data instances
+ */
 const TOTAL_DAILY = 5;
 
+/**
+ * @api {get} /weather?=params verification with parameter (optional)
+ * @apiName GetWeather
+ * @apiGroup Weather
+ *
+ * @apiParam {String} zip Zipcode for desired location for weather data
+ *
+ * @apiSuccess (Success 200) {String} current JSON string containing current weather data
+ *
+ * @apiSuccess (Success 200) {String} hourly JSON string containing weather data for 24 hours
+ *
+ * @apiSuccess (Success 200) {String} daily JSON string containing weather data for 5 days
+ *
+ * @apiError (400: Geocode API request error) {String} message API request error
+ *
+ * @apiError (400: OpenWeather API request error) {String} message API request error
+ *
+ */
 router.get("/", (req, res) => {
     res.type("application/json");
     let latitude = "47.2451";
@@ -62,7 +96,7 @@ router.get("/", (req, res) => {
                         dayEntry.weather = daily[i].weather[0].main;
                         dayData.data.push(dayEntry);
                     }
-                    res.status(201).send({
+                    res.status(200).send({
                         current: currentData,
                         hourly: hourData,
                         daily: dayData

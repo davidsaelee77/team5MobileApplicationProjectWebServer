@@ -48,6 +48,9 @@ let router = express.Router();
  */
 router.use(bodyParser.json());
 
+/**
+ * This allows parsing of the body of POST requests, that are url encoded
+ */
 router.use(bodyParser.urlencoded());
 
 /**
@@ -58,24 +61,20 @@ config = {
 };
 
 /**
- * @api {post} /auth Request to register a user
- * @apiName PostAuth
- * @apiGroup Auth
+ * @api {post} /reset Request to update a password
+ * @apiName PostReset
+ * @apiGroup Reset
  *
- * @apiParam {String} first a users first name
- * @apiParam {String} last a users last name
- * @apiParam {String} username a users handle/username *required unique
- * @apiParam {String} email a users email *required unique
- * @apiParam {String} password a users password
+ * @apiParam {String} name JWT token containing email name info
+ * @apiParam {String} password users desired new password
+ * @apiParam {String} confirm users desired new password, again for confirmation
  *
- * @apiSuccess (Success 201) {boolean} success true when the name is inserted
- * @apiSuccess (Success 201) {String} email the email of the user inserted
+ * @apiSuccess (Success 201) {boolean} success true when password is updated
+ * @apiSuccess (Success 201) {String} message informs user that password was successfully updated
  *
- * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Bad Token) {String} message "Token expired or invalid"
  *
- * @apiError (400: Username exists) {String} message "Username exists"
- *
- * @apiError (400: Email exists) {String} message "Email exists"
+ * @apiError (400: Bad Request) {String} message "Invalid request"
  *
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */

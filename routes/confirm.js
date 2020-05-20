@@ -52,7 +52,7 @@ config = {
  *
  * @apiParam {String} verifier Verification token from email
  *
- * @apiSuccess (Success 201) {String} Message confirming verification success
+ * @apiSuccess (Success 201) {String} message confirming verification success
  *
  * @apiError (400: Unable to verify email currently) {String} message "Invalid token or already verified"
  *
