@@ -57,7 +57,6 @@ config = {
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
  * @apiParam {Number} chatId the id of th chat to insert this message into
- * @apiParam {String} message a message to store
  *
  * @apiSuccess (Success 201) {boolean} acknowledge true when the service has succesfully performed the query
  * regardless if the email passed in exists or not
