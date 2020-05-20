@@ -51,7 +51,7 @@ router.get("/", (req, res) => {
 
                     for (let i = 0; i < TOTAL_HOURLY; i++) {
                         let newEntry = {};
-                        newEntry.tempMin = hourly[i].temp;
+                        newEntry.temp = hourly[i].temp;
                         newEntry.weather = hourly[i].weather[0].main;
                         hourData.data.push(newEntry);
                     }

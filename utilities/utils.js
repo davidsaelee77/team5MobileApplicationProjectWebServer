@@ -128,11 +128,11 @@ function sendChangePasswordEmail(receiver, first, last) {
     const subj = "Griffin Change Password Request";
 
     // Nodemailer sends user verification link
-    let emailText = "Dear " + first + " " + last + "\nSomebody has requested that the password"
-        + " tied with this email be changed, if this was not you, contact support, your account may"
-        + " have been comprimised!\n"
+    let emailText = "Dear " + first + " " + last + ",\n\nSomebody has requested that the password"
+        + " tied to this email be changed. If this was not you, please contact support as your account may"
+        + " have been compromised!\n"
         + "Please click on the following link to continue with the password change request"
-        + ", the link will expire in 1 hour.\n";
+        + "; the link will expire in 1 hour.\n";
 
     //TODO: needs splash page
     let passwordChangeLink = "https://team5-tcss450-server.herokuapp.com/support?mode=r&name=" + token;
