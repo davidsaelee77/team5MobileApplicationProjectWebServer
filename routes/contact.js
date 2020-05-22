@@ -96,7 +96,7 @@ router.get("/", (req, res) => {
             });
     } else {
         res.status(400).send({
-            message: "No username provided"
+            message: "No memberid provided"
         });
     }
 });

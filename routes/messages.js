@@ -69,7 +69,7 @@ router.post("/", (request, response, next) => {
                     message: "Chat ID not found"
                 });
             } else {
-                next()
+                next();
             }
         }).catch(error => {
         response.status(400).send({
@@ -208,6 +208,27 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
                 error: error
         });
     });
+}, (request, response, next) => {
+    // Validate that member is part of this chat.
+    let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
+    let values = [request.params.chatId, request.decoded.memberid];
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount > 0) {
+                next()
+            } else {
+                response.status(400).send({
+                    message: "user not in chat"
+                });
+            }
+        }).catch(error => {
+        response.status(400).send({
+            message: "SQL Error on member in chat check",
+            error: error
+        });
+    });
+
 }, (request, response) => {
     //perform the Select
     if (!request.params.messageId) {

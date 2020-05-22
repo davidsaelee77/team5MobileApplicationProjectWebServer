@@ -100,43 +100,44 @@ router.post('/', (req, res) => {
             res.status(400).send({
                 message: "Non UTF-8 encoding found; cannot process"
             })
-        }
-        let passwordTest = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
-        if (!passwordTest.test(password) || username.length > 32 || username.length < 4 || !email.includes("@")) {
-            res.status(400).send({
-                message: "Invalid parameters!"
-            });
-        }
-        let salt = crypto.randomBytes(32).toString("hex");
-        let salted_hash = getHash(password, salt);
-
-        let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email";
-        let values = [first, last, username, email, salted_hash, salt];
-        pool.query(theQuery, values)
-            .then(result => {
-                // Response informs user of successful registration
-                res.status(201).send({
-                    success: true,
-                    email: result.rows[0].email
+        } else {
+            let passwordTest = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+            if (!passwordTest.test(password) || username.length > 32 || username.length < 4 || !email.includes("@")) {
+                res.status(400).send({
+                    message: "Invalid parameters!"
                 });
+            } else {
+                let salt = crypto.randomBytes(32).toString("hex");
+                let salted_hash = getHash(password, salt);
 
-                sendVerificationEmail(result.rows[0].email);
-            })
-            .catch((err) => {
-                if (err.constraint === "members_username_key") {
-                    res.status(400).send({
-                        message: "Username exists"
+                let theQuery = "INSERT INTO MEMBERS(FirstName, LastName, Username, Email, Password, Salt) VALUES ($1, $2, $3, $4, $5, $6) RETURNING Email";
+                let values = [first, last, username, email, salted_hash, salt];
+                pool.query(theQuery, values)
+                    .then(result => {
+                        // Response informs user of successful registration
+                        res.status(201).send({
+                            success: true,
+                            email: result.rows[0].email
+                        });
+                        sendVerificationEmail(result.rows[0].email);
+                    })
+                    .catch((err) => {
+                        if (err.constraint === "members_username_key") {
+                            res.status(400).send({
+                                message: "Username exists"
+                            });
+                        } else if (err.constraint === "members_email_key") {
+                            res.status(400).send({
+                                message: "Email exists"
+                            });
+                        } else {
+                            res.status(400).send({
+                                message: err.detail
+                            });
+                        }
                     });
-                } else if (err.constraint === "members_email_key") {
-                    res.status(400).send({
-                        message: "Email exists"
-                    });
-                } else {
-                    res.status(400).send({
-                        message: err.detail
-                    });
-                }
-            })
+            }
+        }
     } else {
         res.status(400).send({
             message: "Missing required information"

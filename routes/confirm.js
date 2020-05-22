@@ -95,8 +95,7 @@ router.post("/", (req, res) => {
                 });
             });
     } else {
-        res.status(400);
-        res.send({
+        res.status(400).send({
             message: "Invalid verification link"
         });
     }

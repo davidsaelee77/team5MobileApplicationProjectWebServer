@@ -1,11 +1,11 @@
 //express is the framework we're going to use to handle requests
-const express = require('express')
+const express = require('express');
 
 //Access the connection to Heroku Database
-let pool = require('../utilities/utils').pool
+let pool = require('../utilities/utils').pool;
 
 
-var router = express.Router()
+var router = express.Router();
 
 //This allows parsing of the body of POST requests, that are encoded in JSON
 //router.use(require("body-parser").json())
@@ -50,30 +50,28 @@ router.post("/", (request, response, next) => {
     if (!request.body.name) {
         response.status(400).send({
             message: "Missing required information"
-        })
+        });
     } else {
-        next()
+        next();
     }
 }, (request, response) => {
-
     let insert = `INSERT INTO Chats(Name)
                   VALUES ($1)
-                  RETURNING ChatId`
-    let values = [request.body.name]
+                  RETURNING ChatId`;
+    let values = [request.body.name];
     pool.query(insert, values)
         .then(result => {
             response.send({
-                sucess: true,
+                success: true,
                 chatID:result.rows[0].chatid
-            })
+            });
         }).catch(err => {
             response.status(400).send({
                 message: "SQL Error",
                 error: err
-            })
-
-        })
-})
+            });
+        });
+});
 
 /**
  * @api {put} /chats/:chatId? Request add a user to a chat
