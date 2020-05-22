@@ -68,7 +68,7 @@ router.use(bodyParser.json());
 router.get("/", (req, res) => {
     if (req.query.memberid) {
         let theQuery = "SELECT MemberID_A, MemberID, Username, FirstName, LastName FROM Members" 
-            + "INNER JOIN Contacts ON Members.memberid = Contacts.memberid_b";
+            + " INNER JOIN Contacts ON Members.memberid = Contacts.memberid_b";
         pool.query(theQuery)
             .then(result => {
                 if (result.rowCount > 0) {
@@ -86,13 +86,13 @@ router.get("/", (req, res) => {
                     res.status(200).send({
                         success: true,
                         message: {}
-                    })
+                    });
                 }
             })
             .catch(err => {
                 res.status(400).send({
-                    message: err.detail + "here!"
-                })
+                    message: err.detail
+                });
             });
     } else {
         res.status(400).send({
@@ -147,7 +147,7 @@ router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
                 message: "SQL Error",
                 error: error
             });
-        })
+        });
     }, (request, response) => {
         //Delete the Contact from the table
         let insert = `DELETE FROM Contacts
@@ -158,13 +158,13 @@ router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
             .then(result => {
                 response.send({
                     success: true
-                })
+                });
             }).catch(err => {
             response.status(400).send({
                 message: "SQL Error",
                 error: err
-            })
-        })
+            });
+        });
     }
 );
 

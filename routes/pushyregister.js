@@ -150,7 +150,7 @@ router.delete('/', (request, response, next) => {
             message: "SQL Error",
             error: err
         });
-    })
+    });
 });
 
 module.exports = router;

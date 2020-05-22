@@ -81,8 +81,6 @@ router.post("/", (request, response, next) => {
     //validate memberid exists in the chat
     let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
     let values = [request.body.chatId, request.decoded.memberid];
-    //TODO: Remove logger
-    console.log("decoded id: ", request.decoded.memberid);
 
     pool.query(query, values)
         .then(result => {

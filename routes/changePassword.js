@@ -67,23 +67,20 @@ config = {
  */
 router.post('/', (request, response) => {
     response.type("application/json");
-    const email = request.body.email
+    const email = request.body.email;
 
     let theQuery = "SELECT FirstName, LastName FROM Members WHERE Email=$1";
     let values = [email];
 
-    //TODO: What status code will an acknowledge be?
     pool.query(theQuery, values)
         .then(result => {
             if (result.rowCount == 0) {
-                //email does not match
-                //TODO: Remove message, change status code?
                 response.status(201).send({
                     acknowledge: true,
-                })
+                });
                 return;
             }
-            let first = result.rows[0].firstname
+            let first = result.rows[0].firstname;
             let last = result.rows[0].lastname;
 
             //send password reset email using firstname and lastname
@@ -91,7 +88,7 @@ router.post('/', (request, response) => {
 
             response.status(201).send({
                 acknowledge: true
-            })
+            });
         })
         .catch((err) => {
             //unable to query, log error
@@ -99,10 +96,8 @@ router.post('/', (request, response) => {
             response.status(400).send({
                 acknowledge: false,
                 message: err.detail
-            })
+            });
         });
-
-    
 });
 
 module.exports = router;

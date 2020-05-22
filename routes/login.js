@@ -98,7 +98,7 @@ router.get('/', (request, response) => {
                                 let token = jwt.sign(
                                     {
                                         username: email,
-                                        memberid: result.rows[0].memberid
+                                        memberid: memberid
                                     },
                                     config.secret,
                                     {
@@ -126,8 +126,6 @@ router.get('/', (request, response) => {
                 }
             })
             .catch((err) => {
-                //log the error
-                //console.log(err.stack)
                 response.status(400).send({
                     message: err.detail
                 });
