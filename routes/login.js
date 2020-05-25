@@ -97,7 +97,7 @@ router.get('/', (request, response) => {
                                 //credentials match and verified. get a new JWT
                                 let token = jwt.sign(
                                     {
-                                        username: email,
+                                        email: email,
                                         memberid: memberid
                                     },
                                     config.secret,
