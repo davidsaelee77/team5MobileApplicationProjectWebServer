@@ -193,7 +193,7 @@ router.put("/:chatId/", (request, response, next) => {
 )
 
 /**
- * @api {get} /chats/:chatId? Request to get the emails of user in a chat
+ * @api {get} /chats?=params Request to get the emails of user in a chat
  * @apiName GetChats
  * @apiGroup Chats
  * 
@@ -213,16 +213,16 @@ router.put("/:chatId/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */ 
-router.get("/:chatId", (request, response, next) => {
+router.get("/", (request, response, next) => {
     //validate on missing or invalid (type) parameters
-    if (!request.params.chatId) {
+    if (!request.query.chatId) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.params.chatId)) {
+    } else if (isNaN(request.query.chatId)) {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number",
-            chatId: request.params.chatId
+            chatId: request.query.chatId
         })
     } else {
         next()
@@ -230,7 +230,7 @@ router.get("/:chatId", (request, response, next) => {
 },  (request, response, next) => {
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
-    let values = [request.params.chatId]
+    let values = [request.query.chatId]
 
     pool.query(query, values)
         .then(result => {
@@ -253,7 +253,7 @@ router.get("/:chatId", (request, response, next) => {
                     FROM ChatMembers
                     INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId
                     WHERE ChatId=$1`
-        let values = [request.params.chatId]
+        let values = [request.query.chatId]
         pool.query(query, values)
             .then(result => {
                 response.send({
@@ -267,13 +267,6 @@ router.get("/:chatId", (request, response, next) => {
                 })
             })
 });
-
-// router.get("/", (request, response) => {
-//     response.status(200).send({
-//         message:"yo"
-//     })
-//     //do nothing?
-// });
 
 /**
  * @api {delete} /chats/:chatId?/:email? Request delete a user from a chat

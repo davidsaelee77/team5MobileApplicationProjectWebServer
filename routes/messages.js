@@ -149,7 +149,7 @@ router.post("/", (request, response, next) => {
 });
 
 /**
- * @api {get} /messages/:chatId?/:messageId? Request to get chat messages
+ * @api {get} /messages?=params Request to get chat messages
  * @apiName GetMessages
  * @apiGroup Messages
  *
@@ -176,13 +176,13 @@ router.post("/", (request, response, next) => {
  *
  * @apiUse JSONError
  */
-router.get("/:chatId?/:messageId?", (request, response, next) => {
+router.get("/", (request, response, next) => {
     //validate chatId is not empty or non-number
-    if (!request.params.chatId) {
+    if (!request.query.chatId) {
         response.status(400).send({
             message: "Missing required information"
         });
-    }  else if (isNaN(request.params.chatId)) {
+    }  else if (isNaN(request.query.chatId)) {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
         });
@@ -192,7 +192,7 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
 }, (request, response, next) => {
     //validate that the ChatId exisits
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1';
-    let values = [request.params.chatId];
+    let values = [request.query.chatId];
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -211,7 +211,7 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
 }, (request, response, next) => {
     // Validate that member is part of this chat.
     let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
-    let values = [request.params.chatId, request.decoded.memberid];
+    let values = [request.query.chatId, request.decoded.memberid];
 
     pool.query(query, values)
         .then(result => {
@@ -231,10 +231,10 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
 
 }, (request, response) => {
     //perform the Select
-    if (!request.params.messageId) {
+    if (!request.query.messageId) {
         //no messageId provided. Use the largest possible integer value
         //allowed for the messageId in the db table.
-        request.params.messageId = 2**31 - 1;
+        request.query.messageId = 2**31 - 1;
     }
     let query = `SELECT Messages.PrimaryKey AS messageId, Members.Email, Messages.Message, 
                     to_char(Messages.Timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
@@ -243,11 +243,11 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
                     WHERE ChatId=$1 AND Messages.PrimaryKey < $2
                     ORDER BY Timestamp DESC
                     LIMIT 15`;
-    let values = [request.params.chatId, request.params.messageId];
+    let values = [request.query.chatId, request.query.messageId];
     pool.query(query, values)
         .then(result => {
             response.send({
-                chatId: request.params.chatId,
+                chatId: request.query.chatId,
                 rowCount : result.rowCount,
                 rows: result.rows
             });

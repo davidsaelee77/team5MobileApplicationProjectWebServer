@@ -19,7 +19,7 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 
 /**
- * @api {get} /chatData/:memberId? Request to get chatIds that the memberId is a part of
+ * @api {get} /chatData?=params Request to get chatIds that the memberId is a part of
  * @apiName GetChatData
  * @apiGroup ChatData
  *
@@ -40,7 +40,7 @@ router.use(bodyParser.json());
  *
  * @apiUse JSONError
  */
-router.get("/:memberId?", (request, response, next) => {
+router.get("/", (request, response, next) => {
     //validate MemberID is not empty or non-number
     if (!request.query.memberId) {
         response.status(400).send({
@@ -75,12 +75,11 @@ router.get("/:memberId?", (request, response, next) => {
     });
 }, (request, response) => {
     //perform the Select
-    let query = 'SELECT * FROM ChatMembers WHERE MemberId=$1';
+    let query = 'SELECT ChatID FROM ChatMembers WHERE MemberId=$1';
     let values = [request.query.memberId];
     pool.query(query, values)
         .then(result => {
             response.send({
-                memberId: request.query.memberId,
                 rowCount: result.rowCount,
                 rows: result.rows
             });
