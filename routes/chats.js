@@ -132,9 +132,10 @@ router.put("/", (request, response, next) => {
         });
         //code here based on the results of the query
 }, (request, response, next) => {
-    //validate email exists 
+    //validate email exists
     let query = 'SELECT * FROM Members WHERE MemberId=$1';
     let values = [request.decoded.memberid];
+    console.log(request.decoded);
 
     pool.query(query, values)
         .then(result => {
