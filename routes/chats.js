@@ -31,6 +31,7 @@ router.use(bodyParser.json());
  * @apiGroup Chats
  * 
  * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
  * @apiParam {String} name the name for the chat
  * 
  * @apiSuccess (Success 201) {boolean} success true when the name is inserted
@@ -96,13 +97,13 @@ router.post("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */ 
-router.put("/:chatId/", (request, response, next) => {
+router.put("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.params.chatId) {
+    if (!request.query.chatId) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.params.chatId)) {
+    } else if (isNaN(request.query.chatId)) {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
         })
@@ -112,7 +113,7 @@ router.put("/:chatId/", (request, response, next) => {
 }, (request, response, next) => {
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
-    let values = [request.params.chatId]
+    let values = [request.query.chatId]
 
     pool.query(query, values)
         .then(result => {
@@ -154,7 +155,7 @@ router.put("/:chatId/", (request, response, next) => {
 }, (request, response, next) => {
         //validate email does not already exist in the chat
         let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2'
-        let values = [request.params.chatId, request.decoded.memberid]
+        let values = [request.query.chatId, request.decoded.memberid]
     
         pool.query(query, values)
             .then(result => {
@@ -177,7 +178,7 @@ router.put("/:chatId/", (request, response, next) => {
     let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
                   VALUES ($1, $2)
                   RETURNING *`
-    let values = [request.params.chatId, request.decoded.memberid]
+    let values = [request.query.chatId, request.decoded.memberid]
     pool.query(insert, values)
         .then(result => {
             response.send({
@@ -274,7 +275,9 @@ router.get("/", (request, response, next) => {
  * @apiGroup Chats
  * 
  * @apiDescription Does not delete the user associated with the required JWT but 
- * instead delelets the user based on the email parameter.  
+ * instead delelets the user based on the email parameter.
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * @apiParam {Number} chatId the chat to delete the user from
  * @apiParam {String} email the email of the user to delete
@@ -291,13 +294,13 @@ router.get("/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */ 
-router.delete("/:chatId/:email", (request, response, next) => {
+router.delete("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.params.chatId || !request.params.email) {
+    if (!request.query.chatId || !request.params.email) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.params.chatId)) {
+    } else if (isNaN(request.query.chatId)) {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
         })
@@ -307,7 +310,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
 }, (request, response, next) => {
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
-    let values = [request.params.chatId]
+    let values = [request.query.chatId]
 
     pool.query(query, values)
         .then(result => {
@@ -327,7 +330,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
 }, (request, response, next) => {
     //validate email exists AND convert it to the associated memberId
     let query = 'SELECT MemberID FROM Members WHERE Email=$1'
-    let values = [request.params.email]
+    let values = [request.query.email]
 
     pool.query(query, values)
         .then(result => {
@@ -336,7 +339,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
                     message: "email not found"
                 })
             } else {
-                request.params.email = result.rows[0].memberid
+                request.query.email = result.rows[0].memberid
                 next()
             }
         }).catch(error => {
@@ -348,7 +351,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
 }, (request, response, next) => {
         //validate email exists in the chat
         let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2'
-        let values = [request.params.chatId, request.params.email]
+        let values = [request.query.chatId, request.query.email]
     
         pool.query(query, values)
             .then(result => {
@@ -372,7 +375,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
                   WHERE ChatId=$1
                   AND MemberId=$2
                   RETURNING *`
-    let values = [request.params.chatId, request.params.email]
+    let values = [request.query.chatId, request.query.email]
     pool.query(insert, values)
         .then(result => {
             response.send({
