@@ -56,6 +56,12 @@ VALUES
     (1, 'Global Chat')
 RETURNING *;
 
+INSERT INTO
+    chats(chatid, name)
+VALUES
+    (2, 'Test Chat 2')
+RETURNING *;
+
 --Add the three test users to Global Chat
 INSERT INTO 
     ChatMembers(ChatId, MemberId)
@@ -263,3 +269,32 @@ FROM Members
 WHERE Members.Email='dsael1@uw.edu'
 RETURNING *;
 
+--Add the three test users to Global Chat
+INSERT INTO
+    ChatMembers(ChatId, MemberId)
+SELECT 2, Members.MemberId
+FROM Members
+WHERE Members.Email='test1@test.com'
+    OR Members.Email='test3@test.com'
+RETURNING *;
+
+--Add Multiple messages to create a conversation
+INSERT INTO
+    Messages(ChatId, Message, MemberId)
+SELECT
+    2,
+    'nothing works',
+    Members.MemberId
+FROM Members
+WHERE Members.Email='test1@test.com'
+RETURNING *;
+
+INSERT INTO
+    Messages(ChatId, Message, MemberId)
+SELECT
+    2,
+    'fuck this shit',
+    Members.MemberId
+FROM Members
+WHERE Members.Email='test3@test.com'
+RETURNING *;
