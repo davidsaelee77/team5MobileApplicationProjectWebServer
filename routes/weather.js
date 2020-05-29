@@ -50,30 +50,29 @@ router.get("/", (req, res) => {
     res.type("application/json");
     let latitude, longitude;
     let zipcode = "98402";
-    if (req.query.zip) {
+    if (req.query.zip && req.query.zip.length === 5) {
         zipcode = req.query.zip;
     } else if (req.query.latitude && req.query.longitude) {
 
     }
     let googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=zipcode" + zipcode + "&key=" +
         process.env.GOOGLE_API_KEY;
-
-    console.log("GOT HERE!");
     request(googleUrl, function(error, response, body) {
         if (error) {
-            console.log("HERE is error");
             res.send(error);
         } else {
 
             let googleGeo = JSON.parse(body);
-            console.log(googleGeo);
             latitude = googleGeo.results[0].geometry.location.lat;
             longitude = googleGeo.results[0].geometry.location.lng;
             let locationInfo = googleGeo.results[0].address_components;
             let cityName = "Unknown";
             for (let i = 0; i < locationInfo.length; i++) {
-                if (locationInfo[i].types.includes("locality")) {
+                if (locationInfo[i].types.includes("locality") ||
+                    locationInfo[i].types.includes("sublocality") ||
+                    locationInfo[i].types.includes("sublocality_level_1")) {
                     cityName = locationInfo[i].short_name;
+                    break;
                 }
             }
             let url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + latitude + "&lon=" + longitude +
