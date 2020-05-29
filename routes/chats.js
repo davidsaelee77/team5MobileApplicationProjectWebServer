@@ -296,7 +296,7 @@ router.get("/", (request, response, next) => {
  */ 
 router.delete("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.query.chatId || !request.params.email) {
+    if (!request.query.chatId || !request.query.email) {
         response.status(400).send({
             message: "Missing required information"
         })
