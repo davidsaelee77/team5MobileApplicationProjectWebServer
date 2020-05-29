@@ -49,9 +49,9 @@ app.use('/support', require('./routes/support/support.js'));
 
 app.use('/reset', require('./routes/reset.js'));
 
-app.use('/contact', require('./routes/contact.js'));
+app.use('/contact', middleware.checkToken, require('./routes/contact.js'));
 
-app.use('/weather', require('./routes/weather.js'));
+app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
 /**
  * Using resend.js for route to resend verification email endpoint (POST)
@@ -73,12 +73,12 @@ app.use('/changePassword', require('./routes/changePassword.js'));
 /**
  * Using chatData.js for route to retrieve conversations that a user is in endpoint (GET)
  */
-app.use('/chatData', require('./routes/chatData.js'));
+app.use('/chatData', middleware.checkToken, require('./routes/chatData.js'));
 
 /**
  * Using chats.js for route to retrieve conversation data, and send data
  */
-app.use('/chats', require('./routes/chats.js'));
+app.use('/chats', middleware.checkToken, require('./routes/chats.js'));
 
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'));
