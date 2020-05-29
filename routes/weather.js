@@ -48,20 +48,34 @@ const TOTAL_DAILY = 5;
  */
 router.get("/", (req, res) => {
     res.type("application/json");
-    let latitude = "47.2451";
-    let longitude = "122.4380";
+    let latitude, longitude;
     let zipcode = "98402";
     if (req.query.zip) {
         zipcode = req.query.zip;
+    } else if (req.query.latitude && req.query.longitude) {
+
     }
-    let geoUrl = "https://geocode.xyz/" + zipcode + "?region=US&json=1&auth=" + process.env.GEOCODE_API_KEY;
-    request(geoUrl, function(error, response, body) {
+    let googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=zipcode" + zipcode + "&key=" +
+        process.env.GOOGLE_API_KEY;
+
+    console.log("GOT HERE!");
+    request(googleUrl, function(error, response, body) {
         if (error) {
+            console.log("HERE is error");
             res.send(error);
         } else {
-            let geo = JSON.parse(body);
-            latitude = geo.latt;
-            longitude = geo.longt;
+
+            let googleGeo = JSON.parse(body);
+            console.log(googleGeo);
+            latitude = googleGeo.results[0].geometry.location.lat;
+            longitude = googleGeo.results[0].geometry.location.lng;
+            let locationInfo = googleGeo.results[0].address_components;
+            let cityName = "Unknown";
+            for (let i = 0; i < locationInfo.length; i++) {
+                if (locationInfo[i].types.includes("locality")) {
+                    cityName = locationInfo[i].short_name;
+                }
+            }
             let url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + latitude + "&lon=" + longitude +
                 "&exclude=&appid=" + WEATHER_KEY;
             let currentData = {};
@@ -97,6 +111,7 @@ router.get("/", (req, res) => {
                         dayData.data.push(dayEntry);
                     }
                     res.status(200).send({
+                        city: cityName,
                         current: currentData,
                         hourly: hourData,
                         daily: dayData
