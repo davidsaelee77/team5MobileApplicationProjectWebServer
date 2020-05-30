@@ -50,53 +50,59 @@ router.use(bodyParser.json());
  *
  * @apiDescription Request to get all of the contacts that the requester has
  *
- * @apiParam {Number} memberId the member to look up.
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
- * @apiSuccess {Object[]} messages List of contacts from the contacts table
- * @apiSuccess {String} messages.memberId_A The user that is getting their contacts
- * @apiSuccess {String} messages.memberId The id for the member that memberId_A is connected with
- * @apiSuccess {String} messages.Username memberId's username
- * @apiSuccess {String} messages.FirstName The first name for memberId 
- * @apiSuccess {String} messages.LastName The last name for memberId
- *
+ * @apiSuccess {Object[]} invitations List of unverified contacts from the contacts table
+ * @apiSuccess {String} invitations.memberId The id for the member that has an unverified connection with the requester
+ * @apiSuccess {String} invitations.username memberId's username
+ * @apiSuccess {String} invitations.firstName The first name for memberId 
+ * @apiSuccess {String} invitations.lastName The last name for memberId
+ * @apiSuccess {Object[]} contacts List of verified contacts from the contacts table
+ * @apiSuccess {String} contacts.memberId The id for the member that has a verified connection with the requester
+ * @apiSuccess {String} contacts.username memberId's username
+ * @apiSuccess {String} contacts.firstName The first name for memberId 
+ * @apiSuccess {String} contacts.lastName The last name for memberId
+ * 
  * @apiError (400: Missing Parameters) {String} message "No username provided"
  *
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  *
  * @apiUse JSONError
  */
-router.get("/", (req, res) => {
-    if (req.query.memberid) {
-        let theQuery = "SELECT MemberID_A, MemberID, Username, FirstName, LastName FROM Members" 
-            + " INNER JOIN Contacts ON Members.memberid = Contacts.memberid_b";
-        pool.query(theQuery)
+router.get("/", (request, response) => { 
+    if (request.decoded.memberid) {
+        let theQuery = `SELECT Contacts.Verified, MemberID, username, Firstname, Lastname FROM Members 
+        INNER JOIN Contacts ON (($1 = Contacts.memberid_b AND Members.memberid = Contacts.memberid_a) 
+        OR ($1 = Contacts.memberid_a AND Contacts.memberid_b = Members.memberid))`;
+        let values = [request.decoded.memberid];
+        pool.query(theQuery, values)
             .then(result => {
-                if (result.rowCount > 0) {
-                    let myResult = result.rows;
-                    myResult = myResult.filter(function (element) {
-                        // Leave this comparison as '==' and not '===' because int vs string of int
-                        return element.memberid_a == req.query.memberid;
-                    });
-                    myResult.forEach(element => delete element.memberid_a);
-                    res.status(200).send({
-                        success: true,
-                        message: myResult
-                    });
-                } else {
-                    res.status(200).send({
-                        success: true,
-                        message: {}
-                    });
-                }
+                let queryResult = result.rows;
+                let invitationResult = [];
+                let contactResult = [];
+                queryResult.forEach( function (element) {
+                    let verified = element.verified;
+                    delete element.verified;
+                    if (verified == 0) {
+                        invitationResult.push(element);
+                    } else {
+                        contactResult.push(element);
+                    }
+                });
+                response.status(200).send({
+                    success: true,
+                    invitations: invitationResult,
+                    contacts: contactResult
+                });
             })
             .catch(err => {
-                res.status(400).send({
+                response.status(400).send({
                     message: err.detail
                 });
             });
     } else {
-        res.status(400).send({
-            message: "No memberid provided"
+        response.status(400).send({
+            message: "Invalid memberid provided"
         });
     }
 });
@@ -105,9 +111,10 @@ router.get("/", (req, res) => {
  * @api {delete} /contact Request to delete a contact between two users
  * @apiName DeleteContact
  * @apiGroup Contact
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
- * @apiParam {Number} memberId_A the id of the first column for the contact to be deleted
- * @apiParam {Number} memberId_B the id of the second column for the contact to be deleted
+ * @apiParam {Number} memberId the id of the other member for the contact to be deleted
  * 
  * @apiSuccess {boolean} success true when the contact is deleted
  *
@@ -116,13 +123,13 @@ router.get("/", (req, res) => {
  * @apiError (404: User Not Found) {String} message "Contact does not exist"
  * @apiError (400: SQL Error) {String} message the reported SQL error details
  */
-router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
+router.delete("/", (request, response, next) => {
         //validate on empty parameters
-        if (!request.params.memberID_A || !request.params.memberID_B) {
+        if (!request.decoded.memberid || !request.query.memberId) {
             response.status(400).send({
                 message: "Missing required information"
             });
-        } else if ((isNaN(request.params.memberID_A) || isNaN(request.params.memberID_B))) {
+        } else if ((isNaN(request.decoded.memberid) || isNaN(request.query.memberId))) {
             response.status(400).send({
                 message: "Malformed parameter. Member ID must be a number"
             });
@@ -131,8 +138,11 @@ router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
         }
     }, (request, response, next) => {
         //validate chat id exists
-        let query = 'SELECT * FROM CONTACTS WHERE MemberID_A = $1 AND MemberID_B = $2';
-        let values = [request.params.memberID_A, request.params.memberID_B];
+        let query = `SELECT * 
+                    FROM CONTACTS 
+                    WHERE (MemberID_A = $1 AND MemberID_B = $2) 
+                    OR (MemberID_A = $2 AND MemberID_B = $1)`;
+        let values = [request.decoded.memberid, request.query.memberId];
         pool.query(query, values)
             .then(result => {
                 if (result.rowCount == 0) {
@@ -150,10 +160,11 @@ router.delete("/:memberID_A/:memberID_B", (request, response, next) => {
         });
     }, (request, response) => {
         //Delete the Contact from the table
-        let insert = `DELETE FROM Contacts
-                  WHERE MemberID_A = $1
-                  AND MemberID_B = $2`;
-        let values = [request.params.memberID_A, request.params.memberID_B];
+        let insert = `DELETE 
+                        FROM Contacts 
+                        WHERE (MemberID_A = $1 AND MemberID_B = $2)
+                        OR (MemberID_A = $2 AND MemberID_B = $1)`;
+        let values = [request.decoded.memberid, request.query.memberId];
         pool.query(insert, values)
             .then(result => {
                 response.send({
