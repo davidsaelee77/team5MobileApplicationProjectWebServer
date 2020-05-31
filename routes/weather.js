@@ -176,10 +176,12 @@ router.get("/", (req, res) => {
                             dayData.data.push(dayEntry);
                         }
                         res.status(200).send({
-                            city: cityName,
-                            zip: zip,
-                            latitude: latitude,
-                            longitude: longitude,
+                            location: {
+                                zip: zip,
+                                city: cityName,
+                                latitude: latitude,
+                                longitude: longitude
+                            },
                             current: currentData,
                             hourly: hourData,
                             daily: dayData
