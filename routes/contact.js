@@ -185,6 +185,8 @@ router.delete("/", (request, response, next) => {
  * @apiGroup Contact
  *
  * @apiDescription Adds a contact between two memberIDs
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
  * @apiParam {Number} memberId_A the id of member to contact from
  * @apiParam {Number} memberId_B the id of member to contact to
@@ -214,7 +216,7 @@ router.post("/", (request, response, next) => {
         next();
     }
 }, (request, response, next) => {
-    //validate chat id exists
+    //validate member id exists
     let query = 'SELECT * FROM MEMBERS WHERE MEMBERID IN ($1, $2)';
     let values = [request.body.memberid_a, request.body.memberid_b];
     pool.query(query, values)
@@ -232,10 +234,11 @@ router.post("/", (request, response, next) => {
             error: error
         });
     });
+    //TODO: Validate that the contact does not already exisit!!
 }, (request, response, next) => {
-    //add the message to the database
+    //add the  unverified contact to the database
     let insert = 'INSERT INTO Contacts(MemberID_A, MemberID_B, Verified) VALUES($1, $2, $3)';
-    let values = [request.body.memberid_a, request.body.memberid_b, 1];
+    let values = [request.body.memberid_a, request.body.memberid_b, 0];
     pool.query(insert, values)
         .then(result => {
             if (result.rowCount == 1) {
@@ -272,10 +275,103 @@ router.post("/", (request, response, next) => {
         }).catch(err => {
         response.status(400).send({
             //message: "SQL Error on select from push token",
+            //TODO: we have added the contact but failed sending a pushy request, notify or undo
             error: err
         });
     });
 });
 
+
+/**
+ * @api {put} /contacts accept a contact request between two users
+ * @apiName PutContact
+ * @apiGroup Contact
+ *
+ * @apiDescription Sets the contact between two users as verified
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {Number} memberId the id of the member who sent the contact request
+ *
+ * @apiSuccess (Success 201) {boolean} success true when the contact is verified
+ *
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberId must be a number" 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiError (404: Member Not Found) {String} message "Member not found"
+ * @apiError (404: Contact Not Found) {String} message "Contact does not exist"
+ * 
+ * @apiUse JSONError
+ */
+router.put("/", (request, response, next) => {
+    //validate on empty parameters
+    if (!request.query.memberId) {
+        response.status(400).send({
+            message: "Missing required information"
+        });
+    } else {
+        next();
+    }
+}, (request, response, next) => { 
+    //validate the memberId
+    let query = 'SELECT * FROM Members WHERE MemberId=$1';
+    let values = [request.query.memberId];
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Member not found"
+                });
+            } else {
+                next();
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error M",
+                error: error
+            });
+        });
+}, (request, response, next) => {
+    //validate the contact
+    let query = `SELECT * 
+                FROM Contacts 
+                WHERE (MemberID_A=$1 AND MemberID_B=$2) OR (MemberID_A=$2 AND MemberID_B=$1);`;
+    let values = [request.decoded.memberid, request.query.memberId];
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Contact does not exist"
+                });
+            } else {
+                next();
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error C",
+                error: error
+            });
+        });
+}, (request, response) => {
+    //set contact to verified
+    let update = `UPDATE Contacts 
+                SET Verified = 1 
+                WHERE (MemberID_A=$1 AND MemberID_B=$2) OR (MemberID_A=$2 AND MemberID_B=$1);`;
+    let values = [request.decoded.memberid, request.query.memberId];
+   pool.query(update, values)
+        .then(result => {
+            response.send({
+                success: true
+            });
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                decode: request.decoded.memberid,
+                query: request.query.memberId,
+                error: err
+            });
+        });
+});
 
 module.exports = router;
