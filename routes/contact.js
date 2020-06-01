@@ -239,7 +239,25 @@ router.post("/", (request, response, next) => {
             error: error
         });
     });
-    //TODO: Validate that the contact does not already exist
+}, (request, response, next) => {
+    let query = 'SELECT * FROM CONTACTS WHERE (MEMBERID_A = $1 AND MEMBERID_B = $2) OR (MEMBERID_B = $1 ' +
+        'AND MEMBERID_A = $2)';
+    let values = [request.body.memberid_a, request.body.memberid_b];
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                console.log("doesn't exist yet!");
+                next();
+            } else {
+                response.status(400).send({
+                    error: "Existing contact"
+                });
+            }
+        }).catch(err => {
+            response.status(400).send({
+            error: err
+            });
+        });
 }, (request, response, next) => {
     //add the  unverified contact to the database
     let insert = 'INSERT INTO Contacts(MemberID_A, MemberID_B, Verified) VALUES($1, $2, $3)';
@@ -261,7 +279,7 @@ router.post("/", (request, response, next) => {
         }).catch(err => {
         response.status(400).send({
             //message: "SQL Error on insert",
-            error: err + ", SQL"
+            error: err
         });
     });
 }, (request, response) => {
