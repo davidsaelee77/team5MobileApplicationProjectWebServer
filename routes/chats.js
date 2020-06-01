@@ -75,21 +75,23 @@ router.post("/", (request, response, next) => {
 });
 
 /**
- * @api {put} /chats/:chatId? Request add a user to a chat
+ * @api {put} /chats?=param Request add a user to a chat
  * @apiName PutChats
  * @apiGroup Chats
  * 
- * @apiDescription Adds the user associated with the required JWT. 
+ * @apiDescription Adds the memberId into the associated chatId. 
  * 
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * @apiParam {Number} chatId the chat to add the user to
+ * @apiParam {Number} memberId the member to add to the chat
  * 
  * @apiSuccess {boolean} success true when the name is inserted
  * 
- * @apiError (404: Chat Not Found) {String} message "chatID not found"
- * @apiError (404: Email Not Found) {String} message "email not found"
- * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
+ * @apiError (404: Chat Not Found) {String} message "chatId not found"
+ * @apiError (404: Member Not Found) {String} message "memberId not found"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberId must be a number" 
  * @apiError (400: Duplicate Email) {String} message "user already joined"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
@@ -99,13 +101,17 @@ router.post("/", (request, response, next) => {
  */ 
 router.put("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.query.chatId) {
+    if (!request.query.chatId || !request.query.memberId) {
         response.status(400).send({
             message: "Missing required information"
         });
     } else if (isNaN(request.query.chatId)) {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
+        });
+    } else if (isNaN(request.query.memberId)) {
+        response.status(400).send({
+            message: "Malformed parameter. memberId must be a number"
         });
     } else {
         next();
@@ -114,7 +120,6 @@ router.put("/", (request, response, next) => {
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1';
     let values = [request.query.chatId];
-
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -132,15 +137,16 @@ router.put("/", (request, response, next) => {
         });
         //code here based on the results of the query
 }, (request, response, next) => {
-    //validate email exists
+    //validate memberId exists
+    //TODO: Check assumption, do not need to verify that a valid token has a valid memberId 
     let query = 'SELECT * FROM Members WHERE MemberId=$1';
-    let values = [request.decoded.memberid];
+    let values = [request.query.memberId];
 
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: "email not found"
+                    message: "Member ID not found"
                 });
             } else {
                 //user found
@@ -153,9 +159,9 @@ router.put("/", (request, response, next) => {
             });
         });
 }, (request, response, next) => {
-        //validate email does not already exist in the chat
+        //validate memberId does not already exist in the chat
         let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
-        let values = [request.query.chatId, request.decoded.memberid];
+        let values = [request.query.chatId, request.query.memberId];
     
         pool.query(query, values)
             .then(result => {
@@ -178,7 +184,7 @@ router.put("/", (request, response, next) => {
     let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
                   VALUES ($1, $2)
                   RETURNING *`;
-    let values = [request.query.chatId, request.decoded.memberid];
+    let values = [request.query.chatId, request.query.memberId];
     pool.query(insert, values)
         .then(result => {
             response.send({
