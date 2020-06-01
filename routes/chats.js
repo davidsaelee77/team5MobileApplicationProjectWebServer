@@ -138,7 +138,13 @@ router.put("/", (request, response, next) => {
         //code here based on the results of the query
 }, (request, response, next) => {
     //validate memberId exists
-    //TODO: Check assumption, do not need to verify that a valid token has a valid memberId 
+    //TODO: Check assumption, do not need to verify that a valid token has a valid memberId
+
+    //TODO: If you're at this step, you are correct in that our middleware has already checked that the token is valid,
+    // so I agree that we don't have to check memberID of token.
+    // What we should instead be checking is that the memberID associated with the token is in the chat we're adding to.
+    // Right now, we have the security hole in that any user who has a valid JWT can add anyone to any chat given
+    // a number. {Patrick}
     let query = 'SELECT * FROM Members WHERE MemberId=$1';
     let values = [request.query.memberId];
 

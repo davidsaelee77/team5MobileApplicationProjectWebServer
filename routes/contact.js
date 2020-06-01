@@ -28,6 +28,8 @@ let pool = require('../utilities/utils').pool;
  */
 let getHash = require('../utilities/utils').getHash;
 
+const msg_functions = require('../utilities/utils').messaging;
+
 /**
  * Using express package routing
  */
@@ -226,6 +228,9 @@ router.post("/", (request, response, next) => {
                     message: "Member not found"
                 });
             } else {
+                response.members = {
+                    first: result.rows[0], second: result.rows[1]
+                };
                 next();
             }
         }).catch(error => {
@@ -234,7 +239,7 @@ router.post("/", (request, response, next) => {
             error: error
         });
     });
-    //TODO: Validate that the contact does not already exisit!!
+    //TODO: Validate that the contact does not already exist
 }, (request, response, next) => {
     //add the  unverified contact to the database
     let insert = 'INSERT INTO Contacts(MemberID_A, MemberID_B, Verified) VALUES($1, $2, $3)';
@@ -242,7 +247,10 @@ router.post("/", (request, response, next) => {
     pool.query(insert, values)
         .then(result => {
             if (result.rowCount == 1) {
-                //TODO: Do something here
+                //TODO: Change memberid_a to username
+                response.message = {
+                    memberid: request.body.memberid_a,
+                };
                 next();
             } else {
                 response.status(404).send({
@@ -253,7 +261,7 @@ router.post("/", (request, response, next) => {
         }).catch(err => {
         response.status(400).send({
             //message: "SQL Error on insert",
-            error: err
+            error: err + ", SQL"
         });
     });
 }, (request, response) => {
@@ -266,17 +274,18 @@ router.post("/", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             result.rows.forEach(entry =>
-                msg_functions.sendMessageToIndividual(
+                msg_functions.sendContactRequestToIndividual(
                     entry.token,
                     response.message));
-            response.status(201).send({
-                success:true
+                response.status(201).send({
+                success:true,
+                message: response.message
             });
         }).catch(err => {
         response.status(400).send({
             //message: "SQL Error on select from push token",
             //TODO: we have added the contact but failed sending a pushy request, notify or undo
-            error: err
+            error: err + ", Error with pushy"
         });
     });
 });
