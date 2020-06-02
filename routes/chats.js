@@ -101,7 +101,7 @@ router.post("/", (request, response, next) => {
  */ 
 router.put("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.query.chatId || !request.query.memberId) {
+    if (!request.query.chatId || !request.query.username) {
         response.status(400).send({
             message: "Missing required information"
         });
@@ -109,11 +109,12 @@ router.put("/", (request, response, next) => {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
         });
-    } else if (isNaN(request.query.memberId)) {
+    } else if (request.query.username == null) {
         response.status(400).send({
-            message: "Malformed parameter. memberId must be a number"
+            message: "Malformed parameter. username must be alphanumeric"
         });
     } else {
+        console.log("pass verify input");
         next();
     }
 }, (request, response, next) => {
@@ -123,7 +124,7 @@ router.put("/", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
-                response.status(404).send({
+                response.status(400).send({
                     message: "Chat ID not found"
                 });
             } else {
@@ -145,17 +146,18 @@ router.put("/", (request, response, next) => {
     // What we should instead be checking is that the memberID associated with the token is in the chat we're adding to.
     // Right now, we have the security hole in that any user who has a valid JWT can add anyone to any chat given
     // a number. {Patrick}
-    let query = 'SELECT * FROM Members WHERE MemberId=$1';
-    let values = [request.query.memberId];
+    let query = 'SELECT MemberID FROM Members WHERE Username=$1';
+    let values = [request.query.username];
 
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: "Member ID not found"
+                    message: "Username not found"
                 });
             } else {
                 //user found
+                request.memberId = result.rows[0].memberid;
                 next();
             }
         }).catch(error => {
@@ -166,8 +168,8 @@ router.put("/", (request, response, next) => {
         });
 }, (request, response, next) => {
         //validate memberId does not already exist in the chat
-        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
-        let values = [request.query.chatId, request.query.memberId];
+        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberID=$2';
+        let values = [request.query.chatId, request.memberId];
     
         pool.query(query, values)
             .then(result => {
@@ -190,7 +192,7 @@ router.put("/", (request, response, next) => {
     let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
                   VALUES ($1, $2)
                   RETURNING *`;
-    let values = [request.query.chatId, request.query.memberId];
+    let values = [request.query.chatId, request.memberId];
     pool.query(insert, values)
         .then(result => {
             response.send({
