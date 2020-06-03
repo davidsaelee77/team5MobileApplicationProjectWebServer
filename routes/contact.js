@@ -208,21 +208,19 @@ router.delete("/", (request, response, next) => {
  */
 router.post("/", (request, response, next) => {
     //validate on empty parameters
-    if (!request.body.memberid_a || !request.body.memberid_b) {
+
+    if (!request.body.username) {
         response.status(400).send({
             message: "Missing required information"
-        });
-    } else if (isNaN(request.body.memberid_a) || (isNaN(request.body.memberid_b))) {
-        response.status(400).send({
-            message: "Malformed parameter. member ID must be a number"
         });
     } else {
         next();
     }
 }, (request, response, next) => {
     //validate member id exists
-    let query = 'SELECT * FROM MEMBERS WHERE MEMBERID IN ($1, $2)';
-    let values = [request.body.memberid_a, request.body.memberid_b];
+
+    let query = 'SELECT * FROM MEMBERS WHERE username = $1 AND memberid <> $2';
+    let values = [request.body.username, request.decoded.memberid];
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -230,21 +228,21 @@ router.post("/", (request, response, next) => {
                     message: "Member not found"
                 });
             } else {
-                response.members = {
-                    first: result.rows[0], second: result.rows[1]
-                };
+                response.sender = request.decoded.memberid;
+                response.receiver = result.rows[0].memberid;
                 next();
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error 1",
             error: error
         });
     });
+
 }, (request, response, next) => {
     let query = 'SELECT * FROM CONTACTS WHERE (MEMBERID_A = $1 AND MEMBERID_B = $2) OR (MEMBERID_B = $1 ' +
         'AND MEMBERID_A = $2)';
-    let values = [request.body.memberid_a, request.body.memberid_b];
+    let values = [response.sender, response.receiver];
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -255,26 +253,21 @@ router.post("/", (request, response, next) => {
                 });
             }
         }).catch(err => {
-            response.status(400).send({
+        response.status(400).send({
             error: err
-            });
         });
+    });
 }, (request, response, next) => {
     //add the  unverified contact to the database
     let insert = 'INSERT INTO Contacts(MemberID_A, MemberID_B, Verified) VALUES($1, $2, $3)';
-    let values = [request.body.memberid_a, request.body.memberid_b, 0];
+    let values = [response.sender, response.receiver, 0];
     pool.query(insert, values)
         .then(result => {
             if (result.rowCount == 1) {
-                //TODO: Change memberid_a to username
-                response.message = {
-                    memberid: request.body.memberid_a,
-                };
                 next();
             } else {
                 response.status(404).send({
-                    //"message": "unknown error"
-                    "message": "Contact does not exist"
+                    "message": "Unexpected error; please contact developers"
                 });
             }
         }).catch(err => {
@@ -283,35 +276,22 @@ router.post("/", (request, response, next) => {
             error: err
         });
     });
-},(request, response, next) => {
-    let query = "SELECT Username FROM Members WHERE MemberID = $1";
-    let values = [request.body.memberid_b];
-    pool.query(query, values)
-        .then(result => {
-            response.username = result.rows[0].username;
-            next();
-        }).catch(error => {
-            response.status(400).send({
-                message: "SQL Error",
-                error:error
-            });
-        });
 }, (request, response) => {
     // send a notification of this message to ALL members with registered tokens
     let query = `SELECT token FROM Push_Token
                         INNER JOIN Contacts ON
                         Push_Token.memberid = Contacts.memberid_B
                         WHERE Contacts.MEMBERID_A=$1`;
-    let values = [request.body.memberid_a];
+    let values = [request.decoded.memberid];
     pool.query(query, values)
         .then(result => {
             result.rows.forEach(entry =>
                 msg_functions.sendContactRequestToIndividual(
                     entry.token,
-                    response.username));
-                response.status(201).send({
+                    response.message));
+            response.status(201).send({
                 success:true,
-                message: response.username
+                message: response.message
             });
         }).catch(err => {
         response.status(400).send({
