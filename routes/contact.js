@@ -228,6 +228,7 @@ router.post("/", (request, response, next) => {
                     message: "Member not found"
                 });
             } else {
+                response.message = request.decoded.username;
                 response.sender = request.decoded.memberid;
                 response.receiver = result.rows[0].memberid;
                 next();
