@@ -112,7 +112,8 @@ router.get('/', (request, response) => {
                                     success: true,
                                     message: 'Authentication successful!',
                                     token: token,
-                                    memberid: memberid
+                                    memberid: memberid,
+                                    username: username
                                 });
                             } else {
                                 response.status(400).send({
