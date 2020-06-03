@@ -81,7 +81,7 @@ router.post("/", (request, response, next) => {
         .then(result => {
             response.status(201).send({
                 success: "true",
-                chatid: result.rows[0].chatid,
+                chatID: result.rows[0].chatid,
                 memberid: result.rows[0].memberid
             });
         }).catch(err => {
