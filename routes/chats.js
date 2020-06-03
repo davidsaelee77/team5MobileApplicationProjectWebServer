@@ -109,12 +109,13 @@ router.put("/", (request, response, next) => {
         response.status(400).send({
             message: "Malformed parameter. chatId must be a number"
         });
-    } else if (request.query.username == null) {
+        let usernameTest = new RegExp("^\\w+$");
+        console.log(usernameTest.test("DevPat_UW"));
+    } else if (!(new RegExp("^\\w+$").test(request.query.username))) {
         response.status(400).send({
-            message: "Malformed parameter. username must not be null"
+            message: "Malformed parameter. username must be non-null alphanumeric"
         });
     } else {
-        console.log("pass verify input");
         next();
     }
 }, (request, response, next) => {

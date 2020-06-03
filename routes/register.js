@@ -102,7 +102,9 @@ router.post('/', (req, res) => {
             })
         } else {
             let passwordTest = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
-            if (!passwordTest.test(password) || username.length > 32 || username.length < 4 || !email.includes("@")) {
+            let usernameTest = new RegExp("^\\w+$");
+            if (!passwordTest.test(password) || username.length > 32 || !usernameTest.test(username) ||
+                username.length < 4 || !email.includes("@")) {
                 res.status(400).send({
                     message: "Invalid parameters!"
                 });
