@@ -68,7 +68,7 @@ router.get('/', (request, response) => {
     const [email, theirPw] = credentials.split(':');
 
     if(email && theirPw) {
-        let theQuery = "SELECT Password, Salt, MemberID FROM Members WHERE Email=$1";
+        let theQuery = "SELECT Password, Salt, MemberID, Username FROM Members WHERE Email=$1";
         let values = [email];
         pool.query(theQuery, values)
             .then(result => {
@@ -83,6 +83,7 @@ router.get('/', (request, response) => {
                 let ourSaltedHash = result.rows[0].password;
 
                 let memberid = result.rows[0].memberid;
+                let username = result.rows[0].username;
 
                 //Combined their password with our salt, then hash
                 let theirSaltedHash = getHash(theirPw, salt);
@@ -98,7 +99,8 @@ router.get('/', (request, response) => {
                                 let token = jwt.sign(
                                     {
                                         email: email,
-                                        memberid: memberid
+                                        memberid: memberid,
+                                        username: username
                                     },
                                     config.secret,
                                     {

@@ -20,6 +20,8 @@ const bodyParser = require("body-parser");
  */
 router.use(bodyParser.json());
 
+const msg_functions = require("../utilities/pushy_utilities");
+
 /**
  * @apiDefine JSONError
  * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
@@ -55,16 +57,32 @@ router.post("/", (request, response, next) => {
     } else {
         next();
     }
-}, (request, response) => {
+}, (request, response, next) => {
     let insert = `INSERT INTO Chats(Name)
                   VALUES ($1)
                   RETURNING ChatId`;
     let values = [request.body.name];
     pool.query(insert, values)
         .then(result => {
-            response.send({
-                success: true,
-                chatID:result.rows[0].chatid
+            response.chatid = result.rows[0].chatid;
+                // chatID:result.rows[0].chatid
+            next();
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            });
+        });
+}, (request, response) => {
+    const decodedID = request.decoded.memberid;
+    let addUser = 'INSERT INTO Chatmembers VALUES ($1, $2) RETURNING ChatId, MemberId';
+    let values = [response.chatid, decodedID];
+    pool.query(addUser, values)
+        .then(result => {
+            response.status(201).send({
+                message: "success",
+                chatid: result.rows[0].chatid,
+                memberid: result.rows[0].memberid
             });
         }).catch(err => {
             response.status(400).send({
@@ -187,8 +205,7 @@ router.put("/", (request, response, next) => {
                     error: error
                 });
             });
-
-}, (request, response) => {
+}, (request, response, next) => {
     //Insert the memberId into the chat
     let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
                   VALUES ($1, $2)
@@ -196,17 +213,38 @@ router.put("/", (request, response, next) => {
     let values = [request.query.chatId, request.memberId];
     pool.query(insert, values)
         .then(result => {
-            response.send({
-                success: true
-            });
+            next();
         }).catch(err => {
             response.status(400).send({
                 message: "SQL Error",
                 error: err
             });
         });
-    }
-);
+ }, (request, response) => {
+    let query = `SELECT token FROM Push_Token WHERE Push_Token.memberid = $1`;
+    let values = [request.memberId];
+    pool.query(query, values)
+        .then(result => {
+            result.rows.forEach(entry =>
+                msg_functions.sendNewChatToIndividual(
+                    entry.token,
+                    request.memberId));
+            console.log(request.memberId);
+            response.status(201).send({
+                success: true,
+                message: request.memberId
+            });
+        }).catch(err => {
+        response.status(400).send({
+            //message: "SQL Error on select from push token",
+            error: err + ", Error with pushy"
+        });
+    });
+});
+
+
+
+
 
 /**
  * @api {get} /chats?=params Request to get the emails of user in a chat
