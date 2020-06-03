@@ -464,7 +464,7 @@
   },
   {
     "type": "get",
-    "url": "/chatData/:memberId?",
+    "url": "/chatData?=params",
     "title": "Request to get chatIds that the memberId is a part of",
     "name": "GetChatData",
     "group": "ChatData",
@@ -575,7 +575,20 @@
     "title": "Request delete a user from a chat",
     "name": "DeleteChats",
     "group": "Chats",
-    "description": "<p>Does not delete the user associated with the required JWT but instead delelets the user based on the email parameter.</p>",
+    "description": "<p>Does not delete the user associated with the required JWT but instead deletes the user based on the email parameter.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -682,7 +695,7 @@
   },
   {
     "type": "get",
-    "url": "/chats/:chatId?",
+    "url": "/chats?=params",
     "title": "Request to get the emails of user in a chat",
     "name": "GetChats",
     "group": "Chats",
@@ -873,9 +886,9 @@
             "description": "<p>the reported SQL error details</p>"
           }
         ],
-        "400: Unknow Chat ID": [
+        "400: Unknown Chat ID": [
           {
-            "group": "400: Unknow Chat ID",
+            "group": "400: Unknown Chat ID",
             "type": "String",
             "optional": false,
             "field": "message",
@@ -899,11 +912,11 @@
   },
   {
     "type": "put",
-    "url": "/chats/:chatId?",
+    "url": "/chats?=param",
     "title": "Request add a user to a chat",
     "name": "PutChats",
     "group": "Chats",
-    "description": "<p>Adds the user associated with the required JWT.</p>",
+    "description": "<p>Adds the username into the associated chatId.</p>",
     "header": {
       "fields": {
         "Header": [
@@ -926,6 +939,13 @@
             "optional": false,
             "field": "chatId",
             "description": "<p>the chat to add the user to</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "username",
+            "description": "<p>the member to add to the chat</p>"
           }
         ]
       }
@@ -951,16 +971,16 @@
             "type": "String",
             "optional": false,
             "field": "message",
-            "description": "<p>&quot;chatID not found&quot;</p>"
+            "description": "<p>&quot;chatId not found&quot;</p>"
           }
         ],
-        "404: Email Not Found": [
+        "404: Member Not Found": [
           {
-            "group": "404: Email Not Found",
+            "group": "404: Member Not Found",
             "type": "String",
             "optional": false,
             "field": "message",
-            "description": "<p>&quot;email not found&quot;</p>"
+            "description": "<p>&quot;username not found&quot;</p>"
           }
         ],
         "400: Invalid Parameter": [
@@ -1087,6 +1107,19 @@
     "title": "Request to delete a contact between two users",
     "name": "DeleteContact",
     "group": "Contact",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1094,15 +1127,8 @@
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "memberId_A",
-            "description": "<p>the id of the first column for the contact to be deleted</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "memberId_B",
-            "description": "<p>the id of the second column for the contact to be deleted</p>"
+            "field": "memberId",
+            "description": "<p>the id of the other member for the contact to be deleted</p>"
           }
         ]
       }
@@ -1171,15 +1197,15 @@
     "name": "GetContact",
     "group": "Contact",
     "description": "<p>Request to get all of the contacts that the requester has</p>",
-    "parameter": {
+    "header": {
       "fields": {
-        "Parameter": [
+        "Header": [
           {
-            "group": "Parameter",
-            "type": "Number",
+            "group": "Header",
+            "type": "String",
             "optional": false,
-            "field": "memberId",
-            "description": "<p>the member to look up.</p>"
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
           }
         ]
       }
@@ -1191,42 +1217,70 @@
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "messages",
-            "description": "<p>List of contacts from the contacts table</p>"
+            "field": "invitations",
+            "description": "<p>List of unverified contacts from the contacts table</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.memberId_A",
-            "description": "<p>The user that is getting their contacts</p>"
+            "field": "invitations.memberId",
+            "description": "<p>The id for the member that has an unverified connection with the requester</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.memberId",
-            "description": "<p>The id for the member that memberId_A is connected with</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "messages.Username",
+            "field": "invitations.username",
             "description": "<p>memberId's username</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.FirstName",
+            "field": "invitations.firstName",
             "description": "<p>The first name for memberId</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.LastName",
+            "field": "invitations.lastName",
+            "description": "<p>The last name for memberId</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "contacts",
+            "description": "<p>List of verified contacts from the contacts table</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "contacts.memberId",
+            "description": "<p>The id for the member that has a verified connection with the requester</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "contacts.username",
+            "description": "<p>memberId's username</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "contacts.firstName",
+            "description": "<p>The first name for memberId</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "contacts.lastName",
             "description": "<p>The last name for memberId</p>"
           }
         ]
@@ -1274,6 +1328,19 @@
     "name": "PostContact",
     "group": "Contact",
     "description": "<p>Adds a contact between two memberIDs</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1370,8 +1437,116 @@
     "groupTitle": "Contact"
   },
   {
+    "type": "put",
+    "url": "/contacts",
+    "title": "accept a contact request between two users",
+    "name": "PutContact",
+    "group": "Contact",
+    "description": "<p>Sets the contact between two users as verified</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Valid JSON Web Token JWT</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "memberId",
+            "description": "<p>the id of the member who sent the contact request</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>true when the contact is verified</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Invalid Parameter": [
+          {
+            "group": "400: Invalid Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed parameter. memberId must be a number&quot;</p>"
+          }
+        ],
+        "400: Missing Parameters": [
+          {
+            "group": "400: Missing Parameters",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the reported SQL error details</p>"
+          }
+        ],
+        "404: Member Not Found": [
+          {
+            "group": "404: Member Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Member not found&quot;</p>"
+          }
+        ],
+        "404: Contact Not Found": [
+          {
+            "group": "404: Contact Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Contact does not exist&quot;</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/contact.js",
+    "groupTitle": "Contact"
+  },
+  {
     "type": "get",
-    "url": "/messages/:chatId?/:messageId?",
+    "url": "/messages?=params",
     "title": "Request to get chat messages",
     "name": "GetMessages",
     "group": "Messages",
