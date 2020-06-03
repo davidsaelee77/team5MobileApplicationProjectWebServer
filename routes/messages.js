@@ -147,7 +147,7 @@ router.post("/", (request, response, next) => {
 });
 
 /**
- * @api {get} /messages?=params Request to get chat messages
+ * @api {get} /messages?params= Request to get chat messages
  * @apiName GetMessages
  * @apiGroup Messages
  *
@@ -161,10 +161,10 @@ router.post("/", (request, response, next) => {
  *
  * @apiSuccess {Number} rowCount the number of messages returned
  * @apiSuccess {Object[]} messages List of massages in the message table
- * @apiSuccess {String} messages.messageId The id for this message
- * @apiSuccess {String} messages.email The email of the user who poseted this message
- * @apiSuccess {String} messages.message The message text
- * @apiSuccess {String} messages.timestamp The timestamp of when this message was posted
+ * @apiSuccess {String} messageId The id for this message
+ * @apiSuccess {String} email The email of the user who poseted this message
+ * @apiSuccess {String} message The message text
+ * @apiSuccess {String} timestamp The timestamp of when this message was posted
  *
  * @apiError (404: ChatId Not Found) {String} message "Chat ID Not Found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"

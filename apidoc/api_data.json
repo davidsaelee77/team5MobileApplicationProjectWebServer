@@ -464,7 +464,7 @@
   },
   {
     "type": "get",
-    "url": "/chatData?=params",
+    "url": "/chatData?params=",
     "title": "Request to get chatIds that the memberId is a part of",
     "name": "GetChatData",
     "group": "ChatData",
@@ -503,14 +503,14 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "chats.chatId",
+            "field": "chatId",
             "description": "<p>The id for this chat</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "chats.memberId",
+            "field": "memberId",
             "description": "<p>The requesters memberID</p>"
           }
         ]
@@ -571,7 +571,7 @@
   },
   {
     "type": "delete",
-    "url": "/chats/:chatId?/:email?",
+    "url": "/chats?params=",
     "title": "Request delete a user from a chat",
     "name": "DeleteChats",
     "group": "Chats",
@@ -695,7 +695,7 @@
   },
   {
     "type": "get",
-    "url": "/chats?=params",
+    "url": "/chats?params=",
     "title": "Request to get the emails of user in a chat",
     "name": "GetChats",
     "group": "Chats",
@@ -739,15 +739,8 @@
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "members",
-            "description": "<p>List of members in the chat</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "messages.email",
-            "description": "<p>The email for the member in the chat</p>"
+            "field": "rows",
+            "description": "<p>JSONArray containing List of members in the chat</p>"
           }
         ]
       }
@@ -912,7 +905,7 @@
   },
   {
     "type": "put",
-    "url": "/chats?=param",
+    "url": "/chats?param=",
     "title": "Request add a user to a chat",
     "name": "PutChats",
     "group": "Chats",
@@ -959,6 +952,13 @@
             "optional": false,
             "field": "success",
             "description": "<p>true when the name is inserted</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "message",
+            "description": "<p>memberid of added user</p>"
           }
         ]
       }
@@ -1103,7 +1103,7 @@
   },
   {
     "type": "delete",
-    "url": "/contact",
+    "url": "/contact?params=",
     "title": "Request to delete a contact between two users",
     "name": "DeleteContact",
     "group": "Contact",
@@ -1224,28 +1224,28 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "invitations.memberId",
+            "field": "memberId",
             "description": "<p>The id for the member that has an unverified connection with the requester</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "invitations.username",
+            "field": "username",
             "description": "<p>memberId's username</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "invitations.firstName",
+            "field": "firstName",
             "description": "<p>The first name for memberId</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "invitations.lastName",
+            "field": "lastName",
             "description": "<p>The last name for memberId</p>"
           },
           {
@@ -1254,34 +1254,6 @@
             "optional": false,
             "field": "contacts",
             "description": "<p>List of verified contacts from the contacts table</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "contacts.memberId",
-            "description": "<p>The id for the member that has a verified connection with the requester</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "contacts.username",
-            "description": "<p>memberId's username</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "contacts.firstName",
-            "description": "<p>The first name for memberId</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "contacts.lastName",
-            "description": "<p>The last name for memberId</p>"
           }
         ]
       }
@@ -1323,7 +1295,7 @@
   },
   {
     "type": "post",
-    "url": "/contacts",
+    "url": "/contact",
     "title": "Request to add a contact between two users",
     "name": "PostContact",
     "group": "Contact",
@@ -1346,17 +1318,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String",
             "optional": false,
-            "field": "memberId_A",
-            "description": "<p>the id of member to contact from</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "memberId_B",
-            "description": "<p>the id of member to contact to</p>"
+            "field": "username",
+            "description": "<p>the username of member to contact from</p>"
           }
         ]
       }
@@ -1438,7 +1403,7 @@
   },
   {
     "type": "put",
-    "url": "/contacts",
+    "url": "/contact?params=",
     "title": "accept a contact request between two users",
     "name": "PutContact",
     "group": "Contact",
@@ -1546,7 +1511,7 @@
   },
   {
     "type": "get",
-    "url": "/messages?=params",
+    "url": "/messages?params=",
     "title": "Request to get chat messages",
     "name": "GetMessages",
     "group": "Messages",
@@ -1592,28 +1557,28 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.messageId",
+            "field": "messageId",
             "description": "<p>The id for this message</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.email",
+            "field": "email",
             "description": "<p>The email of the user who poseted this message</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.message",
+            "field": "message",
             "description": "<p>The message text</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "messages.timestamp",
+            "field": "timestamp",
             "description": "<p>The timestamp of when this message was posted</p>"
           }
         ]
@@ -2045,7 +2010,7 @@
   },
   {
     "type": "get",
-    "url": "/weather?=params",
+    "url": "/weather?params=",
     "title": "verification with parameter (optional)",
     "name": "GetWeather",
     "group": "Weather",
@@ -2057,7 +2022,21 @@
             "type": "String",
             "optional": false,
             "field": "zip",
-            "description": "<p>Zipcode for desired location for weather data</p>"
+            "description": "<p>Zipcode for desired location for weather data (optional if lat/long are provided)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "latitude",
+            "description": "<p>Latitude for desired location (must be paired with longitude) (optional if zip provided)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "longitude",
+            "description": "<p>Longitude for desired location (must be paired with latitude) (optional if zip provided)</p>"
           }
         ]
       }
@@ -2065,6 +2044,13 @@
     "success": {
       "fields": {
         "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "location",
+            "description": "<p>JSON String containing location data</p>"
+          },
           {
             "group": "Success 200",
             "type": "String",

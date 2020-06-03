@@ -19,7 +19,7 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 
 /**
- * @api {get} /chatData?=params Request to get chatIds that the memberId is a part of
+ * @api {get} /chatData?params= Request to get chatIds that the memberId is a part of
  * @apiName GetChatData
  * @apiGroup ChatData
  *
@@ -29,8 +29,8 @@ router.use(bodyParser.json());
  *
  * @apiSuccess {Number} rowCount the number of messages returned
  * @apiSuccess {Object[]} chats List of chatIds in the ChatMembers table
- * @apiSuccess {String} chats.chatId The id for this chat
- * @apiSuccess {String} chats.memberId The requesters memberID
+ * @apiSuccess {String} chatId The id for this chat
+ * @apiSuccess {String} memberId The requesters memberID
  *
  * @apiError (404: MemberID Not Found) {String} message "Member ID Not Found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberID must be a number"

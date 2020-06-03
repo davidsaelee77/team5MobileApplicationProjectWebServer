@@ -55,15 +55,15 @@ router.use(bodyParser.json());
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
  * @apiSuccess {Object[]} invitations List of unverified contacts from the contacts table
- * @apiSuccess {String} invitations.memberId The id for the member that has an unverified connection with the requester
- * @apiSuccess {String} invitations.username memberId's username
- * @apiSuccess {String} invitations.firstName The first name for memberId 
- * @apiSuccess {String} invitations.lastName The last name for memberId
+ * @apiSuccess {String} memberId The id for the member that has an unverified connection with the requester
+ * @apiSuccess {String} username memberId's username
+ * @apiSuccess {String} firstName The first name for memberId
+ * @apiSuccess {String} lastName The last name for memberId
  * @apiSuccess {Object[]} contacts List of verified contacts from the contacts table
- * @apiSuccess {String} contacts.memberId The id for the member that has a verified connection with the requester
- * @apiSuccess {String} contacts.username memberId's username
- * @apiSuccess {String} contacts.firstName The first name for memberId 
- * @apiSuccess {String} contacts.lastName The last name for memberId
+ * @apiSuccess {String} memberId The id for the member that has a verified connection with the requester
+ * @apiSuccess {String} username memberId's username
+ * @apiSuccess {String} firstName The first name for memberId
+ * @apiSuccess {String} lastName The last name for memberId
  * 
  * @apiError (400: Missing Parameters) {String} message "No username provided"
  *
@@ -112,7 +112,7 @@ router.get("/", (request, response) => {
 });
 
 /**
- * @api {delete} /contact Request to delete a contact between two users
+ * @api {delete} /contact?params= Request to delete a contact between two users
  * @apiName DeleteContact
  * @apiGroup Contact
  * 
@@ -184,7 +184,7 @@ router.delete("/", (request, response, next) => {
 );
 
 /**
- * @api {post} /contacts Request to add a contact between two users
+ * @api {post} /contact Request to add a contact between two users
  * @apiName PostContact
  * @apiGroup Contact
  *
@@ -192,8 +192,7 @@ router.delete("/", (request, response, next) => {
  * 
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  *
- * @apiParam {Number} memberId_A the id of member to contact from
- * @apiParam {Number} memberId_B the id of member to contact to
+ * @apiParam {String} username the username of member to contact from
  *
  * @apiSuccess (Success 201) {boolean} success true when the contact is inserted
  *
@@ -290,9 +289,10 @@ router.post("/", (request, response, next) => {
                 msg_functions.sendContactRequestToIndividual(
                     entry.token,
                     response.message));
+            let receiver = response.receiver;
             response.status(201).send({
                 success:true,
-                message: response.message
+                message: receiver
             });
         }).catch(err => {
         response.status(400).send({
@@ -305,7 +305,7 @@ router.post("/", (request, response, next) => {
 
 
 /**
- * @api {put} /contacts accept a contact request between two users
+ * @api {put} /contact?params= accept a contact request between two users
  * @apiName PutContact
  * @apiGroup Contact
  *

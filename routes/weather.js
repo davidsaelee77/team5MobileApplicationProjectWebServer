@@ -29,11 +29,15 @@ const TOTAL_HOURLY = 24;
 const TOTAL_DAILY = 5;
 
 /**
- * @api {get} /weather?=params verification with parameter (optional)
+ * @api {get} /weather?params= verification with parameter (optional)
  * @apiName GetWeather
  * @apiGroup Weather
  *
- * @apiParam {String} zip Zipcode for desired location for weather data
+ * @apiParam {String} zip Zipcode for desired location for weather data (optional if lat/long are provided)
+ * @apiParam {Number} latitude Latitude for desired location (must be paired with longitude) (optional if zip provided)
+ * @apiParam {Number} longitude Longitude for desired location (must be paired with latitude) (optional if zip provided)
+ *
+ * @apiSuccess (Success 200) {String} location JSON String containing location data
  *
  * @apiSuccess (Success 200) {String} current JSON string containing current weather data
  *

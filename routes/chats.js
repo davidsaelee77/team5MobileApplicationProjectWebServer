@@ -93,7 +93,7 @@ router.post("/", (request, response, next) => {
 });
 
 /**
- * @api {put} /chats?=param Request add a user to a chat
+ * @api {put} /chats?param= Request add a user to a chat
  * @apiName PutChats
  * @apiGroup Chats
  * 
@@ -105,6 +105,7 @@ router.post("/", (request, response, next) => {
  * @apiParam {Number} username the member to add to the chat
  * 
  * @apiSuccess {boolean} success true when the name is inserted
+ * @apiSuccess {Number} message memberid of added user
  * 
  * @apiError (404: Chat Not Found) {String} message "chatId not found"
  * @apiError (404: Member Not Found) {String} message "username not found"
@@ -247,7 +248,7 @@ router.put("/", (request, response, next) => {
 
 
 /**
- * @api {get} /chats?=params Request to get the emails of user in a chat
+ * @api {get} /chats?params= Request to get the emails of user in a chat
  * @apiName GetChats
  * @apiGroup Chats
  * 
@@ -256,8 +257,7 @@ router.put("/", (request, response, next) => {
  * @apiParam {Number} chatId the chat to look up. 
  * 
  * @apiSuccess {Number} rowCount the number of messages returned
- * @apiSuccess {Object[]} members List of members in the chat
- * @apiSuccess {String} messages.email The email for the member in the chat
+ * @apiSuccess {Object[]} rows JSONArray containing List of members in the chat
  * 
  * @apiError (404: ChatId Not Found) {String} message "Chat ID Not Found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
@@ -323,7 +323,7 @@ router.get("/", (request, response, next) => {
 });
 
 /**
- * @api {delete} /chats/:chatId?/:email? Request delete a user from a chat
+ * @api {delete} /chats?params= Request delete a user from a chat
  * @apiName DeleteChats
  * @apiGroup Chats
  * 
