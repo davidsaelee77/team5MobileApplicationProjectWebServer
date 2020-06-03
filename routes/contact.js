@@ -234,7 +234,7 @@ router.post("/", (request, response, next) => {
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error 1",
+            message: "SQL Error",
             error: error
         });
     });
