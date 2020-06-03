@@ -73,7 +73,7 @@ router.use(bodyParser.json());
  */
 router.get("/", (request, response) => { 
     if (request.decoded.memberid) {
-        let theQuery = `SELECT Contacts.Verified, MemberID, username, Firstname, Lastname FROM Members 
+        let theQuery = `SELECT Contacts.Verified, MemberID, username, Firstname, Lastname, memberid_b FROM Members 
         INNER JOIN Contacts ON (($1 = Contacts.memberid_b AND Members.memberid = Contacts.memberid_a) 
         OR ($1 = Contacts.memberid_a AND Contacts.memberid_b = Members.memberid))`;
         let values = [request.decoded.memberid];
@@ -86,7 +86,9 @@ router.get("/", (request, response) => {
                     let verified = element.verified;
                     delete element.verified;
                     if (verified == 0) {
-                        invitationResult.push(element);
+                        if (element.memberid_b == request.decoded.memberid) {
+                            invitationResult.push(element);
+                        }
                     } else {
                         contactResult.push(element);
                     }
@@ -246,7 +248,6 @@ router.post("/", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
-                console.log("doesn't exist yet!");
                 next();
             } else {
                 response.status(400).send({
