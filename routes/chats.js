@@ -80,7 +80,7 @@ router.post("/", (request, response, next) => {
     pool.query(addUser, values)
         .then(result => {
             response.status(201).send({
-                message: "success",
+                success: "true",
                 chatid: result.rows[0].chatid,
                 memberid: result.rows[0].memberid
             });
