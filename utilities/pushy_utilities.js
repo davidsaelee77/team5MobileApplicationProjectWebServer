@@ -32,7 +32,7 @@ function sendContactRequestToIndividual(token, message) {
     //build the message for Pushy to send
     let data = {
         "type": "contact",
-        "data": message
+        "username": message
     };
 
     // Send push notification via the Send Notifications API
