@@ -282,6 +282,19 @@ router.post("/", (request, response, next) => {
             error: err
         });
     });
+},(request, response, next) => {
+    let query = "SELECT Username FROM Members WHERE MemberID = $1";
+    let values = [request.body.memberid_b];
+    pool.query(query, values)
+        .then(result => {
+            response.username = result.rows[0].username;
+            next();
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error:error
+            });
+        });
 }, (request, response) => {
     // send a notification of this message to ALL members with registered tokens
     let query = `SELECT token FROM Push_Token
@@ -294,10 +307,10 @@ router.post("/", (request, response, next) => {
             result.rows.forEach(entry =>
                 msg_functions.sendContactRequestToIndividual(
                     entry.token,
-                    response.message));
+                    response.username));
                 response.status(201).send({
                 success:true,
-                message: response.message
+                message: response.username
             });
         }).catch(err => {
         response.status(400).send({
