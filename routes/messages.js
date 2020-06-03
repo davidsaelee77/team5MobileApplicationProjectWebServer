@@ -108,7 +108,7 @@ router.post("/", (request, response, next) => {
             if (result.rowCount == 1) {
                 //insertion success. Attach the message to the Response obj
                 response.message = result.rows[0];
-                response.message.email = request.decoded.email;
+                response.message.email = request.decoded.username;
                 //Pass on to next to push
                 next();
             } else {
@@ -234,7 +234,7 @@ router.get("/", (request, response, next) => {
         //allowed for the messageId in the db table.
         request.query.messageId = 2**31 - 1;
     }
-    let query = `SELECT Messages.PrimaryKey AS messageId, Members.Email, Messages.Message, 
+    let query = `SELECT Messages.PrimaryKey AS messageId, Members.Username, Messages.Message, 
                     to_char(Messages.Timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
                     FROM Messages
                     INNER JOIN Members ON Messages.MemberId=Members.MemberId
