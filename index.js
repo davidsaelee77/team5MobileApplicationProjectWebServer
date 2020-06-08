@@ -51,6 +51,8 @@ app.use('/reset', require('./routes/reset.js'));
 
 app.use('/contact', middleware.checkToken, require('./routes/contact.js'));
 
+app.use('/searchContacts', middleware.checkToken, require('./routes/searchContacts.js'));
+
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
 /**
