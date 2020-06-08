@@ -8,8 +8,6 @@ const express = require('express');
  */
 const jwt = require("jsonwebtoken");
 
-const path = require('path');
-
 /**
  * Accessing postgresql Heroku database
  */
@@ -82,7 +80,9 @@ router.post("/", (req, res) => {
                             );
                         })
                         .catch(err => {
-                            res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
+                            res.status(400).send({
+                                message: err.detail
+                            });
                         })
                 } else {
                     res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
