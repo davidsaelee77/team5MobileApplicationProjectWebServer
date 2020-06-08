@@ -1954,6 +1954,90 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/searchContacts?params=",
+    "title": "Request to get members that the searchstring is a part of in the username",
+    "name": "GetSearchContacts",
+    "group": "SearchContacts",
+    "description": "<p>Request all members that the specified searchString is a part of in the username that are addable</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchString",
+            "description": "<p>the username to look up.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "rowCount",
+            "description": "<p>the number of usernames returned</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "rows",
+            "description": "<p>List of usernames/memberids in the Members table</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "400: Invalid Parameter": [
+          {
+            "group": "400: Invalid Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Malformed parameter. searchString must be present&quot;</p>"
+          }
+        ],
+        "400: Missing Parameters": [
+          {
+            "group": "400: Missing Parameters",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;Missing required information&quot;</p>"
+          }
+        ],
+        "400: SQL Error": [
+          {
+            "group": "400: SQL Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>the reported SQL error details</p>"
+          }
+        ],
+        "400: JSON Error": [
+          {
+            "group": "400: JSON Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;malformed JSON in parameters&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/searchContacts.js",
+    "groupTitle": "SearchContacts"
+  },
+  {
+    "type": "get",
     "url": "/support",
     "title": "Request for support page",
     "name": "GetSupport",

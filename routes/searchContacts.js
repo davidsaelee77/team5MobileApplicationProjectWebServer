@@ -38,14 +38,12 @@ router.use(bodyParser.json());
  * @apiName GetSearchContacts
  * @apiGroup SearchContacts
  *
- * @apiDescription Request all members that the specified searchString is a part of in the username
+ * @apiDescription Request all members that the specified searchString is a part of in the username that are addable
  *
  * @apiParam {String} searchString the username to look up.
  *
- * @apiSuccess {Number} rowCount the number of messages returned
- * @apiSuccess {Object[]} rows List of members in the Members table
- * @apiSuccess {String} username The id for this member
- * @apiSuccess {String} memberId The results memberId
+ * @apiSuccess {Number} rowCount the number of usernames returned
+ * @apiSuccess {Object[]} rows List of usernames/memberids in the Members table
  *
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. searchString must be present"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
@@ -64,9 +62,13 @@ router.get("/", (request, response, next) => {
     }
 }, (request, response) => {
     //find the results that are like the searchString
-    let query = 'SELECT Username, MemberID FROM Members WHERE Username LIKE $1';
+    let aquery = 'SELECT Username, MemberID FROM Members WHERE Username LIKE $1';
+    let query = "SELECT USERNAME, MEMBERID FROM MEMBERS WHERE USERNAME LIKE $1 AND MEMBERID <> $2 EXCEPT " +
+        "SELECT username, memberid FROM Members INNER JOIN Contacts ON (($2 = Contacts.memberid_b AND " +
+        "Members.memberid = Contacts.memberid_a) OR ($2 = Contacts.memberid_a AND " +
+        "Contacts.memberid_b = Members.memberid))";
     let parameter = '%' + request.query.searchString + '%';
-    let values = [parameter];
+    let values = [parameter, request.decoded.memberid];
     pool.query(query, values)
         .then(result => {
             response.status(200).send({
