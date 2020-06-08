@@ -75,24 +75,24 @@ router.post("/", (req, res) => {
                     let updateQuery = "UPDATE Members SET Verification = 1 WHERE Email = $1";
                     pool.query(updateQuery, values)
                         .then(result => {
-                            res.status(201).send(
+                            res.status(201).sendFile(
                                 path.join(__dirname + '/reset_success.html')
                                 // success: true,
                                 // message: values[0] + " verified!"
                             );
                         })
                         .catch(err => {
-                            res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
+                            res.status(400).sendFile(path.join(__dirname + '/reset_fail_email.html'));
                         })
                 } else {
-                    res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
+                    res.status(400).sendFile(path.join(__dirname + '/reset_fail_email.html'));
                 }
             })
             .catch(err => {
-                res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
+                res.status(400).sendFile(path.join(__dirname + '/reset_fail_email.html'));
             });
     } else {
-        res.status(400).send(path.join(__dirname + '/reset_fail_invalid.html'));
+        res.status(400).sendFile(path.join(__dirname + '/reset_fail_invalid.html'));
     }
 });
 
