@@ -73,10 +73,11 @@ router.post("/", (req, res) => {
                     let updateQuery = "UPDATE Members SET Verification = 1 WHERE Email = $1";
                     pool.query(updateQuery, values)
                         .then(result => {
-                            res.status(201).send({
-                                success: true,
-                                message: values[0] + " verified!"
-                            });
+                            res.status(201).send(
+                                path.join(__dirname + '/reset_success.html')
+                                // success: true,
+                                // message: values[0] + " verified!"
+                            );
                         })
                         .catch(err => {
                             res.status(400).send({
@@ -84,20 +85,14 @@ router.post("/", (req, res) => {
                             });
                         })
                 } else {
-                    res.status(400).send({
-                        message: "Email already verified or does not exist"
-                    })
+                    res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
                 }
             })
             .catch(err => {
-                res.status(400).send({
-                    message: err.detail
-                });
+                res.status(400).send(path.join(__dirname + '/reset_fail_email.html'));
             });
     } else {
-        res.status(400).send({
-            message: "Invalid verification link"
-        });
+        res.status(400).send(path.join(__dirname + '/reset_fail_invalid.html'));
     }
 });
 
