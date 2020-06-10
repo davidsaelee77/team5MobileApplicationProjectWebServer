@@ -82,25 +82,29 @@ router.post("/", (req, res) => {
                             // });
                         })
                         .catch(err => {
-                            res.status(400).send({
-                                message: err.detail
-                            });
+                            res.redirect("/attemptfail");
+                            // res.status(400).send({
+                            //     message: err.detail
+                            // });
                         })
                 } else {
-                    res.status(400).send({
-                        message: "Email already verified or does not exist"
-                    })
+                    res.redirect("/attemptfail");
+                    // res.status(400).send({
+                    //     message: "Email already verified or does not exist"
+                    // })
                 }
             })
             .catch(err => {
-                res.status(400).send({
-                    message: err.detail
-                });
+                res.redirect("/attemptfail");
+                // res.status(400).send({
+                //     message: err.detail
+                // });
             });
     } else {
-        res.status(400).send({
-            message: "Invalid verification link"
-        });
+        res.redirect("/attemptfail");
+        // res.status(400).send({
+        //     message: "Invalid verification link"
+        // });
     }
 });
 

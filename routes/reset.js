@@ -101,26 +101,30 @@ router.post('/', (req, res) => {
                             // });
                         })
                         .catch(err => {
-                            res.status(400).send({
-                                message: err.detail
-                            });
+                            res.redirect("/attemptfail");
+                            // res.status(400).send({
+                            //     message: err.detail
+                            // });
                         });
                 } else {
-                    res.status(400).send({
-                        message: "Request failed. Please contact support" +
-                            " regarding your account"
-                    });
+                    res.redirect("/attemptfail");
+                    // res.status(400).send({
+                    //     message: "Request failed. Please contact support" +
+                    //         " regarding your account"
+                    // });
                 }
             })
             .catch(err => {
-                res.status(400).send({
-                    message: err.detail
-                })
+                res.redirect("/attemptfail");
+                // res.status(400).send({
+                //     message: err.detail
+                // })
             });
     } else {
-        res.status(400).send({
-            message: "Invalid request"
-        });
+        res.redirect("/attemptfail");
+        // res.status(400).send({
+        //     message: "Invalid request"
+        // });
     }
 });
 
