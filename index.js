@@ -55,6 +55,8 @@ app.use('/searchContacts', middleware.checkToken, require('./routes/searchContac
 
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'));
 
+app.use('/attemptfail', require('./routes/attemptfail.js'));
+
 /**
  * Using resend.js for route to resend verification email endpoint (POST)
  */
