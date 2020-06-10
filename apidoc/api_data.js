@@ -1,5 +1,41 @@
 define({ "api": [
   {
+    "type": "get",
+    "url": "/attemptfail",
+    "title": "Failure HTML splash for errors after posting.",
+    "name": "GetAttemptFail",
+    "group": "AttemptFail",
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "HTML",
+            "optional": false,
+            "field": "path",
+            "description": "<p>Redirects to the Failure page</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "404: Not Found": [
+          {
+            "group": "404: Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No such path exists&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/attemptfail.js",
+    "groupTitle": "AttemptFail"
+  },
+  {
     "type": "delete",
     "url": "/auth",
     "title": "Request to delete a Pushy Token for the user",
@@ -1035,6 +1071,42 @@ define({ "api": [
     "groupTitle": "Chats"
   },
   {
+    "type": "get",
+    "url": "/confirm",
+    "title": "Success HTML splash for finalizing after posting to confirm.",
+    "name": "GetConfirm",
+    "group": "Confirm",
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "HTML",
+            "optional": false,
+            "field": "path",
+            "description": "<p>Redirects to the success page</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "404: Not Found": [
+          {
+            "group": "404: Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No such path exists&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/confirm.js",
+    "groupTitle": "Confirm"
+  },
+  {
     "type": "Post",
     "url": "/confirm?=params",
     "title": "verification with parameter",
@@ -1863,6 +1935,42 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/resend.js",
     "groupTitle": "Resend"
+  },
+  {
+    "type": "get",
+    "url": "/reset",
+    "title": "Success HTML splash for finalizing after posting to reset.",
+    "name": "GetReset",
+    "group": "Reset",
+    "success": {
+      "fields": {
+        "Success 201": [
+          {
+            "group": "Success 201",
+            "type": "HTML",
+            "optional": false,
+            "field": "path",
+            "description": "<p>Redirects to the success page</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "404: Not Found": [
+          {
+            "group": "404: Not Found",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;No such path exists&quot;</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/reset.js",
+    "groupTitle": "Reset"
   },
   {
     "type": "post",
