@@ -14,6 +14,7 @@
         font-family: monaco, monospace;
         background-image: url("/public/logo.svg");
         background-size: 100% 100%;
+        font-size: 30px;
     }
     h1, h2 {
         display: inline-block;
@@ -29,15 +30,16 @@
                 -1px  0   0 #ffffff;
     }
     h1 {
-        font-size: 50px
+        font-size: 100px
     }
     h2 {
-        font-size: 30px;
+        font-size: 70px;
         color: #85754d
     }
     span {
         color: #4b2e83;
     }
+
 
     label{
         display: inline-block;
@@ -45,7 +47,7 @@
         width: 250px;
         text-align: left; /*Change to right here if you want it close to the inputs*/
         color: white;
-        font-size: 20px;
+        font-size: 35px;
         text-shadow:
                 -1px -1px 0 #000,
                 0   -1px 0 #000,
@@ -58,11 +60,15 @@
     }
     input {
         display: inline-block;
-        margin-bottom: 5px;
+        margin-bottom: 20px;
+        font-size: 25px;
     }
 
     button {
         display: inline-block;
+        height: 100px;
+        width: 400px;
+        font-size: 40px;
     }
 </style>
 <h1>Welcome to <span>Griffin</span></h1><br>
@@ -77,7 +83,7 @@
     <br/>
     <label for="confirm">Confirm password:</label>
     <input type ="password" name="confirm" id="confirm" value="" required oninput="setCustomValidity('')"><br/>
-    <input type="submit" value ="Reset your password">
+    <button type="submit"  id="passwordsubmit">Reset your password</button>
 
     <script>
         function checkForm(form) {
