@@ -33,6 +33,8 @@ router.use(bodyParser.json());
  */
 router.use(bodyParser.urlencoded());
 
+let path = require('path');
+
 /**
  * Config object for jwt creation
  */
@@ -73,10 +75,11 @@ router.post("/", (req, res) => {
                     let updateQuery = "UPDATE Members SET Verification = 1 WHERE Email = $1";
                     pool.query(updateQuery, values)
                         .then(result => {
-                            res.status(201).send({
-                                success: true,
-                                message: values[0] + " verified!"
-                            });
+                            res.redirect("/confirm");
+                            // res.status(201).send({
+                            //     success: true,
+                            //     message: values[0] + " verified!"
+                            // });
                         })
                         .catch(err => {
                             res.status(400).send({
@@ -99,6 +102,20 @@ router.post("/", (req, res) => {
             message: "Invalid verification link"
         });
     }
+});
+
+/**
+ * @api {get} /confirm Success HTML splash for finalizing after posting to confirm.
+ * @apiName GetConfirm
+ * @apiGroup Confirm
+ *
+ * @apiSuccess (Success 201) {HTML} path Redirects to the success page
+ *
+ * @apiError (404: Not Found) {String} message "No such path exists"
+ *
+ */
+router.get("/", (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/support/verify_success.html'));
 });
 
 module.exports = router;

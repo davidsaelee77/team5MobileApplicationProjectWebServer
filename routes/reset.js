@@ -8,6 +8,8 @@ const express = require("express");
  */
 const crypto = require("crypto");
 
+let path = require('path');
+
 /**
  * Jsonwebtoken used for creating tokens/verifying
  */
@@ -92,10 +94,11 @@ router.post('/', (req, res) => {
                     let newPW = getHash(req.body.password, salt);
                     pool.query(updateQuery, [newPW, values[0]])
                         .then(result => {
-                            res.status(201).send({
-                                success: true,
-                                message: "Password updated!"
-                            });
+                            res.redirect("/reset");
+                            // res.status(201).send({
+                            //     success: true,
+                            //     message: "Password updated!"
+                            // });
                         })
                         .catch(err => {
                             res.status(400).send({
@@ -119,6 +122,20 @@ router.post('/', (req, res) => {
             message: "Invalid request"
         });
     }
+});
+
+/**
+ * @api {get} /reset Success HTML splash for finalizing after posting to reset.
+ * @apiName GetReset
+ * @apiGroup Reset
+ *
+ * @apiSuccess (Success 201) {HTML} path Redirects to the success page
+ *
+ * @apiError (404: Not Found) {String} message "No such path exists"
+ *
+ */
+router.get("/", (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/support/reset_success.html'));
 });
 
 module.exports = router;
